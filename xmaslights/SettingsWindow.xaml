@@ -1,0 +1,35 @@
+﻿<Window x:Class="xmaslights.SettingsWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:av="http://schemas.codeplex.com/wpfcontrib/xaml/presentation"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:xmas="clr-namespace:xmaslights"
+    xmlns:local="clr-namespace:xmaslights.Properties"
+    Title="Settings" Height="209" Width="300" Visibility="Collapsed" WindowStyle="ToolWindow">
+    <Window.Resources>
+        <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="BlinkPatternValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="xmas:BlinkPattern" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <local:Settings x:Key="settings" />
+    </Window.Resources>
+     <Grid DataContext="settings">
+        <av:NotifyIcon Name="notifyIcon" Text="{Binding ElementName=tipText,Path=Text}" Visibility="Visible" MouseDoubleClick="OnNotifyIconDoubleClick"  Icon="/ChristmasLights;component/Resources/TrayIcon.ico">
+            <FrameworkElement.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Settings..." Click="OnSettingsClick" />
+                    <MenuItem Header="Exit" Click="OnExitClick" />
+                </ContextMenu>
+            </FrameworkElement.ContextMenu>
+        </av:NotifyIcon>
+        <Button Height="23" Margin="110,0,0,12" Name="closeButton" VerticalAlignment="Bottom" Click="closeButton_Click" HorizontalAlignment="Left" Width="75">OK</Button>
+        <Label Height="28" Margin="12,12,0,0" Name="label1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="120">Blinking mode:</Label>
+        <ComboBox Height="28" Margin="110,12,12,0" Name="comboBox1" VerticalAlignment="Top" ItemsSource="{Binding Source={StaticResource BlinkPatternValues}}" SelectedValue="{Binding Source={StaticResource settings}, Path=Default.BlinkPattern}" />
+        <CheckBox Height="16" Margin="12,102,12,0" Name="checkBox1" VerticalAlignment="Top" IsChecked="{Binding Source={StaticResource settings}, Path=Default.FirstRun, Mode=TwoWay}">Reset to defaults on next run</CheckBox>
+        <Slider Margin="110,46,12,0" Name="slider1" IsSnapToTickEnabled="True" TickPlacement="BottomRight" Minimum="500" Maximum="1500" TickFrequency="50" Value="{Binding Source={StaticResource settings}, Path=Default.Speed, Mode=TwoWay}" ValueChanged="slider1_ValueChanged" Height="28" VerticalAlignment="Top" Delay="100" />
+        <Label Height="28" Margin="12,46,0,0" Name="label2" VerticalAlignment="Top" HorizontalAlignment="Left" Width="120">Blinking speed:</Label>
+        <CheckBox Height="16" Margin="12,80,0,0" Name="checkBox2" VerticalAlignment="Top" HorizontalAlignment="Left" Width="120" IsChecked="{Binding Source={StaticResource settings}, Path=Default.BlinkAsYouType, Mode=TwoWay}">Blink-as-you-type</CheckBox>
+        <Button Height="23" Margin="0,0,12,12" Name="button1" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75" Click="button1_Click">Cancel</Button>
+    </Grid>    
+</Window>
