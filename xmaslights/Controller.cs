@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using WinForms = System.Windows.Forms;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Controls;
 using System.Windows.Threading;
-using System.Diagnostics;
+using WinForms = System.Windows.Forms;
 
 namespace xmaslights
 {
@@ -181,16 +181,9 @@ namespace xmaslights
             skip = !skip;
             foreach (Light l in _lights)
             {
-                if (skip)
-                {
-                    skip = false;
-                    continue;
-                }
-                else
-                {
-                    l.Blink();
-                    skip = true;
-                }
+                l.on = skip;
+                l.Blink();
+                skip = !skip;
             }
         }
 
@@ -215,11 +208,17 @@ namespace xmaslights
 
         }
 
-        private bool on;
-
         internal void KeyHit()
         {
             timer_Tick(null, null);
+        }
+
+        internal void AllLightsOff()
+        {
+            foreach (Light l in _lights)
+            {
+                l.on = false;
+            }
         }
     }
 }

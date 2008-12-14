@@ -23,7 +23,7 @@ namespace xmaslights
     /// </summary>
     public partial class Light : UserControl
     {
-        private Storyboard blinkStoryboard;
+        //private Storyboard blinkStoryboard;
 
         public Light()
         {
@@ -33,35 +33,29 @@ namespace xmaslights
 
         private void InitializeStoryboards()
         {
-            blinkStoryboard = (Storyboard)TryFindResource("LightBlink");
-            blinkStoryboard.SpeedRatio = Properties.Settings.Default.FadeSpeedRatio;
+           // blinkStoryboard = (Storyboard)TryFindResource("LightBlink");
+          //  blinkStoryboard.SpeedRatio = Properties.Settings.Default.FadeSpeedRatio;
             
         }
 
-        //public void On()
-        //{
-        //    blinkStoryboard.AutoReverse = false;
-        //    blinkStoryboard.Begin(this);
-        //}
-
-
-        //public void Off()
-        //{
-        //    blinkStoryboard.Seek(new TimeSpan(0,0,0), TimeSeekOrigin.Duration);
-        //    blinkStoryboard.AutoReverse = true;
-        //    blinkStoryboard.Begin();
-        //}
-
-        private bool on = true;
+        public bool on = true;
 
         public void Blink()
         {
-            //blinkStoryboard.Stop();
-            //blinkStoryboard.AutoReverse = true;
-            //blinkStoryboard.Begin();
             on = !on;
             
-            ((DropShadowEffect)this.path.Effect).Opacity = on ? 1 : 0;
+            if (on)
+            {
+                ((LinearGradientBrush)this.path.Fill).GradientStops[0].Color = Colors.Orange;
+                ((LinearGradientBrush)this.path.Fill).GradientStops[1].Color = Colors.Red;
+                ((LinearGradientBrush)this.path.Fill).Opacity = 1;
+            }
+            else
+            {
+                ((LinearGradientBrush)this.path.Fill).GradientStops[0].Color = Colors.Yellow;
+                ((LinearGradientBrush)this.path.Fill).GradientStops[1].Color = Colors.White;
+                ((LinearGradientBrush)this.path.Fill).Opacity = 0.5;
+            }
         }
 
     }
