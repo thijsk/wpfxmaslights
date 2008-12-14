@@ -18,8 +18,7 @@
     <IsWebBootstrapper>true</IsWebBootstrapper>
     <ApplicationIcon>Resources\TrayIcon.ico</ApplicationIcon>
     <ManifestCertificateThumbprint>FCEA89DB568A12033978DD6C0A4918C906F47A2B</ManifestCertificateThumbprint>
-    <ManifestKeyFile>
-    </ManifestKeyFile>
+    <ManifestKeyFile>brokenwire.pfx</ManifestKeyFile>
     <GenerateManifests>true</GenerateManifests>
     <SignManifests>true</SignManifests>
     <TargetZone>Internet</TargetZone>
@@ -27,7 +26,11 @@
     <AssemblyOriginatorKeyFile>brokenwire.pfx</AssemblyOriginatorKeyFile>
     <TargetFrameworkSubset>Client</TargetFrameworkSubset>
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
-    <PublishUrl>d:\wpf\xmaslights\publish\</PublishUrl>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <PublishUrl>C:\xmaslights\publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
     <UpdateEnabled>true</UpdateEnabled>
@@ -41,16 +44,11 @@
     <SupportUrl>http://www.brokenwire.net/</SupportUrl>
     <ProductName>ChristmasLights</ProductName>
     <PublisherName>Brokenwire.NET</PublisherName>
-    <CreateWebPageOnPublish>false</CreateWebPageOnPublish>
-    <ApplicationRevision>12</ApplicationRevision>
+    <ApplicationRevision>20</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -112,6 +110,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AboutWindow.xaml.cs">
+      <DependentUpon>AboutWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="BlinkPattern.cs" />
     <Compile Include="Controller.cs" />
     <Compile Include="KeyboardHook.cs" />
@@ -152,6 +153,10 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="AboutWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="BackWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -169,7 +174,7 @@
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
       <Visible>False</Visible>
       <ProductName>.NET Framework Client Profile</ProductName>
-      <Install>false</Install>
+      <Install>true</Install>
     </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
       <Visible>False</Visible>
@@ -189,7 +194,7 @@
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
       <Visible>False</Visible>
       <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>true</Install>
+      <Install>false</Install>
     </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
       <Visible>False</Visible>
@@ -201,6 +206,8 @@
     <Resource Include="Resources\TrayIcon.ico" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="AvalonLibrary\AvalonLibrary.dll" />
+    <Content Include="AvalonLibrary\AvalonLibrary.pdb" />
     <Content Include="publish.htm" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

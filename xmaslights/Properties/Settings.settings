@@ -15,7 +15,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="FadeSpeedRatio" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">2.5</Value>
+      <Value Profile="(Default)">1</Value>
     </Setting>
   </Settings>
 </SettingsFile>
