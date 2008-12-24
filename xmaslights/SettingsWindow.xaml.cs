@@ -57,21 +57,12 @@ namespace xmaslights
             this.Visibility = Visibility.Collapsed;
         }
 
-        private void slider1_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            controller.Timer.Interval = new TimeSpan(0, 0, 0, 0, (int)e.NewValue);
-        }
-
-        private void comboBox1_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            controller.AllLightsOff();
-        }
-
         private void OnAboutClick(object sender, RoutedEventArgs e)
         {
             AboutWindow about = new AboutWindow();
             about.Show();
         }
 
+        
     }
 }

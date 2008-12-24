@@ -73,13 +73,25 @@ namespace xmaslights.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
-        public double FadeSpeedRatio {
+        [global::System.Configuration.DefaultSettingValueAttribute("200")]
+        public int LightSpacing {
             get {
-                return ((double)(this["FadeSpeedRatio"]));
+                return ((int)(this["LightSpacing"]));
             }
             set {
-                this["FadeSpeedRatio"] = value;
+                this["LightSpacing"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool TimerEnabled {
+            get {
+                return ((bool)(this["TimerEnabled"]));
+            }
+            set {
+                this["TimerEnabled"] = value;
             }
         }
     }

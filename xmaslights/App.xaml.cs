@@ -40,10 +40,10 @@ namespace xmaslights
             c.Launch();
         }
 
-        private static int _keyCount;
+        private static short _keyCount;
         public static IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
         {
-            if (_keyHit != null && ++_keyCount == 10)
+            if (xmaslights.Properties.Settings.Default.BlinkAsYouType && _keyHit != null && ++_keyCount == 10)
             {
                 _keyCount = 0;
                 Dispatcher.CurrentDispatcher.BeginInvoke(_keyHit, DispatcherPriority.Input);

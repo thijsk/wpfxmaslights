@@ -6,12 +6,6 @@
     Height="40" Width="20" d:DesignHeight="40" d:DesignWidth="20">
 		<Grid>
 			<Path Margin="5.567,5.523,4.704,0" Stretch="Fill" Stroke="Black" Data="M55.588034,125.29643 C147.08803,34.796888 71.986243,-45.818016 159.08771,134.49653 216.08742,252.4954 -35.911966,215.79597 55.588034,125.29643 z" Grid.Column="2" x:Name="path" StrokeThickness="0.5" VerticalAlignment="Top" Height="33.292" d:LayoutOverrides="GridBox" AllowDrop="False">
-				<Path.Fill>
-					<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0" Opacity="0.5">
-						<GradientStop Color="#FFF9FCEA" Offset="0.262"/>
-						<GradientStop Color="#FFF7F739" Offset="1"/>
-					</LinearGradientBrush>
-				</Path.Fill>
 			</Path>
 			<Rectangle Margin="2.192,0,0.794,-1.834" VerticalAlignment="Bottom" Height="6.684" Fill="#FF4D684E" Stroke="Black" RadiusY="14" RadiusX="14" Grid.Column="2" StrokeThickness="0.5"/>
 		</Grid>

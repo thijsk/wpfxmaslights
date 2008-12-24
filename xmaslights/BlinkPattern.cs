@@ -10,6 +10,7 @@ namespace xmaslights
     {
         Blink,
         Walking,
-        Interlaced
+        Interlaced,
+        Random
     }
 }

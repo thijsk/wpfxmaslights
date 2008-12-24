@@ -5,7 +5,7 @@
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
     xmlns:xmas="clr-namespace:xmaslights"
     xmlns:local="clr-namespace:xmaslights.Properties"
-    Title="Settings" Height="209" Width="300" Visibility="Collapsed" WindowStyle="ToolWindow">
+    Title="Settings" Height="250" Width="350" Visibility="Collapsed" WindowStyle="ToolWindow">
     <Window.Resources>
         <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="BlinkPatternValues">
             <ObjectDataProvider.MethodParameters>
@@ -24,13 +24,16 @@
                 </ContextMenu>
             </FrameworkElement.ContextMenu>
         </av:NotifyIcon>
-        <Button Height="23" Margin="110,0,0,12" Name="closeButton" VerticalAlignment="Bottom" Click="closeButton_Click" HorizontalAlignment="Left" Width="75">OK</Button>
+        <Button Height="23" Margin="160,0,93,12" Name="closeButton" VerticalAlignment="Bottom" Click="closeButton_Click">OK</Button>
         <Label Height="28" Margin="12,12,0,0" Name="label1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="120">Blinking mode:</Label>
-        <ComboBox Height="28" Margin="110,12,12,0" Name="comboBox1" VerticalAlignment="Top" ItemsSource="{Binding Source={StaticResource BlinkPatternValues}}" SelectedValue="{Binding Source={StaticResource settings}, Path=Default.BlinkPattern}" SelectionChanged="comboBox1_SelectionChanged" />
-        <CheckBox Height="16" Margin="12,102,12,0" Name="checkBox1" VerticalAlignment="Top" IsChecked="{Binding Source={StaticResource settings}, Path=Default.FirstRun, Mode=TwoWay}">Reset to defaults on next run</CheckBox>
-        <Slider Margin="110,46,12,0" Name="slider1" IsSnapToTickEnabled="True" TickPlacement="BottomRight" Minimum="500" Maximum="1500" TickFrequency="50" Value="{Binding Source={StaticResource settings}, Path=Default.Speed, Mode=TwoWay}" ValueChanged="slider1_ValueChanged" Height="28" VerticalAlignment="Top" Delay="100" />
+        <ComboBox Height="28" Margin="138,12,12,0" Name="comboBox1" VerticalAlignment="Top" ItemsSource="{Binding Source={StaticResource BlinkPatternValues}}" SelectedValue="{Binding Source={StaticResource settings}, Path=Default.BlinkPattern}"/>
+        <CheckBox Height="16" Margin="12,0,12,38" Name="checkBox1" VerticalAlignment="Bottom" IsChecked="{Binding Source={StaticResource settings}, Path=Default.FirstRun, Mode=TwoWay}">Reset to defaults on next run</CheckBox>
+        <Slider Margin="138,46,12,0" Name="slider1" IsSnapToTickEnabled="True" TickPlacement="BottomRight" Minimum="500" Maximum="2500" TickFrequency="50" Value="{Binding Source={StaticResource settings}, Path=Default.Speed, Mode=TwoWay}" Height="28" VerticalAlignment="Top" Delay="100" />
         <Label Height="28" Margin="12,46,0,0" Name="label2" VerticalAlignment="Top" HorizontalAlignment="Left" Width="120">Blinking speed:</Label>
-        <CheckBox Height="16" Margin="12,80,0,0" Name="checkBox2" VerticalAlignment="Top" HorizontalAlignment="Left" Width="120" IsChecked="{Binding Source={StaticResource settings}, Path=Default.BlinkAsYouType, Mode=TwoWay}">Blink-as-you-type</CheckBox>
+        <CheckBox Height="16" Margin="12,0,0,60" Name="checkBox2" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="120" IsChecked="{Binding Source={StaticResource settings}, Path=Default.BlinkAsYouType, Mode=TwoWay}">Blink-as-you-type</CheckBox>
         <Button Height="23" Margin="0,0,12,12" Name="button1" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75" Click="button1_Click">Cancel</Button>
+        <Slider Margin="138,80,12,104" Name="slider2" Value="{Binding Source={StaticResource settings}, Path=Default.LightSpacing, Mode=TwoWay}" AutoToolTipPlacement="None" Minimum="100" Maximum="300" TickPlacement="BottomRight" TickFrequency="25" IsSnapToTickEnabled="True" />
+        <Label Margin="12,80,0,104" Name="label3" HorizontalAlignment="Left" Width="120">Space between lights:</Label>
+        <CheckBox Height="16" HorizontalAlignment="Left" Margin="12,0,0,82" Name="checkBox3" VerticalAlignment="Bottom" Width="120" IsChecked="{Binding Source={StaticResource settings}, Path=Default.TimerEnabled, Mode=TwoWay}">Timer enabled</CheckBox>
     </Grid>    
 </Window>
