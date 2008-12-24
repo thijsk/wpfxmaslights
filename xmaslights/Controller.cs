@@ -75,6 +75,7 @@ namespace xmaslights
 
         private void StartTimer()
         {
+            _timer.Interval = new TimeSpan(0, 0, 0, 0, Properties.Settings.Default.Speed);
             _timer.Tick += new EventHandler(timer_Tick);
             _timer.Start();
         }
