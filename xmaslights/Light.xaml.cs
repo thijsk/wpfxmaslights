@@ -28,34 +28,37 @@ namespace xmaslights
         public Light()
         {
             InitializeComponent();
-            InitializeStoryboards();
+            IsOn = false;
         }
 
-        private void InitializeStoryboards()
+        public bool IsOn { get; set; }
+        public Brush OnBrush { get; set; }
+        public Brush OffBrush { get; set; }
+
+        public void Switch()
         {
-           // blinkStoryboard = (Storyboard)TryFindResource("LightBlink");
-          //  blinkStoryboard.SpeedRatio = Properties.Settings.Default.FadeSpeedRatio;
-            
+            IsOn = !IsOn;
+            Update();
         }
 
-        public bool on = true;
-
-        public void Blink()
+        public void On()
         {
-            on = !on;
-            
-            if (on)
-            {
-                ((LinearGradientBrush)this.path.Fill).GradientStops[0].Color = Colors.Orange;
-                ((LinearGradientBrush)this.path.Fill).GradientStops[1].Color = Colors.Red;
-                ((LinearGradientBrush)this.path.Fill).Opacity = 1;
-            }
+            IsOn = true;
+            Update();
+        }
+
+        public void Off()
+        {
+            IsOn = false;
+            Update();
+        }
+
+        public void Update()
+        {
+            if (IsOn)
+                this.path.Fill = OnBrush;
             else
-            {
-                ((LinearGradientBrush)this.path.Fill).GradientStops[0].Color = Colors.Yellow;
-                ((LinearGradientBrush)this.path.Fill).GradientStops[1].Color = Colors.White;
-                ((LinearGradientBrush)this.path.Fill).Opacity = 0.5;
-            }
+                this.path.Fill = OffBrush;
         }
 
     }

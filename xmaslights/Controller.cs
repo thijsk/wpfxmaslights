@@ -17,36 +17,64 @@ namespace xmaslights
         
         private readonly List<BackWindow> _windows = new List<BackWindow>();
         private readonly List<Light> _lights = new List<Light>();
+        private int _lightsCount;
         private SettingsWindow _tray;
+        private Random _rnd;
+        private DispatcherTimer _timer;
+        private LinearGradientBrush _onBrush;
+        private LinearGradientBrush _offBrush;
+        
+        private int _currentlight = 0;
+       private bool skip = false;
+
+
+        public DispatcherTimer Timer
+        {
+            get { return _timer; }
+        }
 
         public void Launch()
         {
             if (Properties.Settings.Default.FirstRun)
                 SetupFirstRun();
 
+            Properties.Settings.Default.SettingChanging += new System.Configuration.SettingChangingEventHandler(Default_SettingChanging);
+
+            _rnd = new Random();
+            _timer = new DispatcherTimer();
+
+            InitializeBrushes();
             CreateSettingsWindow();
             AddChristmasLightsWindow();
 
-            StartTimer();
-            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal;
+            
+            StartTimer();            
         }
 
+        private void Default_SettingChanging(object sender, System.Configuration.SettingChangingEventArgs e)
+        {
+            if (e.SettingName.Equals("TimerEnabled")) 
+            {
+                _timer.IsEnabled = (bool)e.NewValue;
+            } else
+            if (e.SettingName.Equals("BlinkPattern"))
+            {
+                AllLightsOff();
+            } else
+            if (e.SettingName.Equals("Speed"))
+            {
+                _timer.Interval = new TimeSpan(0, 0, 0, 0, (int)e.NewValue);
+            }
+        }
+    
         private void CreateSettingsWindow()
         {
             _tray = new SettingsWindow(this);
             _tray.notifyIcon.Visibility = Visibility.Hidden;
         }
 
-        private DispatcherTimer _timer = new DispatcherTimer();
-
-        public DispatcherTimer Timer 
-        {
-            get { return _timer; }
-        }
-
         private void StartTimer()
         {
-           // _timer.Dispatcher.Thread.Priority = System.Threading.ThreadPriority.Lowest;
             _timer.Tick += new EventHandler(timer_Tick);
             _timer.Start();
         }
@@ -54,6 +82,17 @@ namespace xmaslights
         private void AddChristmasLightsWindow()
         {
             int screenNumber = 0;
+
+            Window alttabhider= new Window()
+            {
+                Top = -1,
+                Left = -1,
+                Width = 1,
+                Height = 1,
+                WindowStyle = WindowStyle.ToolWindow
+            };
+            alttabhider.Show();
+            alttabhider.Hide();
 
             foreach (WinForms.Screen s in WinForms.Screen.AllScreens)
             {
@@ -71,9 +110,10 @@ namespace xmaslights
                     Name = "ChristmasLights_Window" + screenNumber++.ToString()
                 };
 
+
+                m.Owner = alttabhider;
                 m.Show();
 
-                const int LIGHTSPACING = 200;
 
                 // Add left side lights
 
@@ -88,9 +128,11 @@ namespace xmaslights
                 List<Light> topLeftSide = new List<Light>();
                 List<Light> topRightSide = new List<Light>();
 
-                for (int x = (LIGHTSPACING / 2); x < s.WorkingArea.Height; x += LIGHTSPACING)
+                for (int x = (Properties.Settings.Default.LightSpacing / 2); x < s.WorkingArea.Height; x += Properties.Settings.Default.LightSpacing)
                 {
                     l = new Light();
+                    l.OnBrush = _onBrush;
+                    l.OffBrush = _offBrush;
                     leftRotateTransform = new RotateTransform(90 + RandomAngle(), 10, 20);
                     l.RenderTransform = leftRotateTransform;
                     Canvas.SetLeft(l, 10);
@@ -100,6 +142,8 @@ namespace xmaslights
                     m.lightsCanvas.Children.Add(l);
 
                     l = new Light();
+                    l.OnBrush = _onBrush;
+                    l.OffBrush = _offBrush;
                     rightRotateTransform = new RotateTransform(-90 + RandomAngle(), 10, 20);
                     l.RenderTransform = rightRotateTransform;
                     Canvas.SetRight(l, 10);
@@ -109,9 +153,11 @@ namespace xmaslights
                     m.lightsCanvas.Children.Add(l);
                 }
 
-                for (int y = (LIGHTSPACING / 2) + (s.WorkingArea.Width / 2); y < s.WorkingArea.Width; y += LIGHTSPACING)
+                for (int y = (Properties.Settings.Default.LightSpacing / 2) + (s.WorkingArea.Width / 2); y < s.WorkingArea.Width; y += Properties.Settings.Default.LightSpacing)
                 {
                     l = new Light();
+                    l.OnBrush = _onBrush;
+                    l.OffBrush = _offBrush;
                     topRotateTransform = new RotateTransform(180 + RandomAngle(), 10, 20);
                     l.RenderTransform = topRotateTransform;
                     Canvas.SetTop(l, 0);
@@ -120,6 +166,8 @@ namespace xmaslights
                     m.lightsCanvas.Children.Add(l);
 
                     l = new Light();
+                    l.OnBrush = _onBrush;
+                    l.OffBrush = _offBrush;
                     l.RenderTransform = topRotateTransform;
                     Canvas.SetTop(l, 0);
                     Canvas.SetRight(l, y);
@@ -131,20 +179,28 @@ namespace xmaslights
                 _lights.AddRange(topLeftSide);
                 _lights.AddRange(topRightSide);
                 _lights.AddRange(rightSide);
-
+                
                 m.WindowState = WindowState.Maximized;
                 _windows.Add(m);
             }
+            _lightsCount = _lights.Count;
+            AllLightsOff();
         }
 
         private void SetupFirstRun()
         {
-           // Properties.Settings.Default.BlinkPattern = BlinkPattern.Walking;
+            Properties.Settings.Default.BlinkPattern = BlinkPattern.Blink;
+            Properties.Settings.Default.Speed = 1000;
             Properties.Settings.Default.FirstRun = false;
             Properties.Settings.Default.Save();
         }
 
         void timer_Tick(object sender, EventArgs e)
+        {
+            Tick();
+        }
+
+        private void Tick()
         {
             _timer.Stop();
             switch (Properties.Settings.Default.BlinkPattern)
@@ -155,6 +211,9 @@ namespace xmaslights
                 case BlinkPattern.Interlaced:
                     Interlaced();
                     break;
+                case BlinkPattern.Random:
+                    Random();
+                    break;
                 default:
                     AllOnOff();
                     break;
@@ -162,47 +221,68 @@ namespace xmaslights
             _timer.Start();
         }
 
+        
+        private void InitializeBrushes()
+        {
+            _onBrush = new LinearGradientBrush();
+            _onBrush.GradientStops = new GradientStopCollection();
+            _onBrush.GradientStops.Add(new GradientStop(Colors.Orange, 0.3));
+            _onBrush.GradientStops.Add(new GradientStop(Colors.Red, 1));
+            _onBrush.Freeze();
+
+            _offBrush = new LinearGradientBrush();
+            _offBrush.GradientStops = new GradientStopCollection();
+            _offBrush.GradientStops.Add(new GradientStop(Colors.Orange, 0));
+            _offBrush.GradientStops.Add(new GradientStop(Colors.Yellow, 1));
+            _offBrush.Opacity = 0.5;
+            _offBrush.Freeze();
+        }
+
         private void AllOnOff()
         {
            foreach (Light l in _lights)
-            {
-                l.Blink();
-                 //if (!on)
-                 //    l.On();
-                 //else
-                 //   l.Off();
-            }
-            //on = !on;
+           {
+                l.Switch();
+           }
         }
 
-        private bool skip = false;
         private void Interlaced()
         {
             skip = !skip;
             foreach (Light l in _lights)
             {
-                l.on = skip;
-                l.Blink();
+                l.IsOn = skip;
+                l.Update();
                 skip = !skip;
             }
         }
 
-        private int currentlight = 0;
+
+
+        private int PreviousLight()
+        {
+            return (_currentlight -1 + _lightsCount) % _lightsCount;
+        }
+
+        private int NextLight()
+        {
+            return (_currentlight + 1) % _lightsCount;
+        }
+
         private void Running()
         {
-            _lights[currentlight].Blink();
-            _lights[(currentlight + 3) % _lights.Count].Blink();
-            _lights[(currentlight + 6) % _lights.Count].Blink();
-            _lights[(currentlight + 9) % _lights.Count].Blink();
-            if (++currentlight >= _lights.Count)
-                currentlight = 0;
+            _lights[PreviousLight()].Off(); 
+            _lights[NextLight()].On();
+            _currentlight = NextLight();
+        }
+
+        private void Random()
+        {
+            _lights[_rnd.Next(_lightsCount - 1)].Switch();
         }
         
-        private Random _rnd;
         private int RandomAngle()
         {
-            if (_rnd == null)
-                _rnd = new Random();
 
             return _rnd.Next(-15, 15);
 
@@ -210,14 +290,14 @@ namespace xmaslights
 
         internal void KeyHit()
         {
-            timer_Tick(null, null);
+            Tick();
         }
 
         internal void AllLightsOff()
         {
             foreach (Light l in _lights)
             {
-                l.on = false;
+                l.Off();
             }
         }
     }
