@@ -1,0 +1,12 @@
+﻿<UserControl
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
+    x:Class="xmaslights.BitmapLight"
+    Height="40" Width="20" d:DesignHeight="40" d:DesignWidth="20">
+    
+			<!--<Path Margin="5.567,5.523,4.704,0" Stretch="Fill" Stroke="Black" Data="M55.588034,125.29643 C147.08803,34.796888 71.986243,-45.818016 159.08771,134.49653 216.08742,252.4954 -35.911966,215.79597 55.588034,125.29643 z" Grid.Column="2" x:Name="path" StrokeThickness="0.5" VerticalAlignment="Top" Height="33.292" d:LayoutOverrides="GridBox" AllowDrop="False">
+			</Path>
+			<Rectangle Margin="2.192,0,0.794,-1.834" VerticalAlignment="Bottom" Height="6.684" Fill="#FF4D684E" Stroke="Black" RadiusY="14" RadiusX="14" Grid.Column="2" StrokeThickness="0.5"/>-->
+    <Image Margin="0,0,0,0" Name="lightImage" Stretch="None" Source="/ChristmasLights;component/Resources/LightRedSmall.png" />
+</UserControl>

@@ -2,5 +2,5 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="ChristmasLights" Topmost="True" ResizeMode="NoResize" ShowInTaskbar="False" IsHitTestVisible="False" Focusable="False" AllowsTransparency="True" WindowStyle="None" Background="Transparent">
-    <Canvas Name="lightsCanvas" />
+    <Canvas Name="lightsCanvas" IsHitTestVisible="False"></Canvas>
 </Window>

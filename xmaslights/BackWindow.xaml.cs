@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
+using System.Windows.Forms;
 
 
 namespace xmaslights
@@ -40,6 +41,33 @@ namespace xmaslights
         [DllImport("user32.dll")]
         public static extern int SetWindowLong(IntPtr hwnd, int index, int newStyle);
 
+        public Screen Screen
+        {
+            get;
+            set;
+        }
+
+        private readonly List<ILight> _lights = new List<ILight>();
+        
+        public List<ILight> Lights
+        {
+            get
+            {
+                return _lights;
+            }
+        }
+
+        public int LightsCount
+        {
+            get;
+            set;
+        }
+
+        public int CurrentLight
+        {
+            get;
+            set;
+        }
 
         protected override void  OnSourceInitialized(EventArgs e)
         {
@@ -52,6 +80,12 @@ namespace xmaslights
             int extendedStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
             SetWindowLong(hwnd, GWL_EXSTYLE, extendedStyle | WS_EX_TRANSPARENT);
         }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Maximized;
+        }
+
     }
 
     

@@ -37,18 +37,50 @@ namespace xmaslights
         {
             Controller c = new Controller();
             _keyHit = c.KeyHit;
-            c.Launch();
         }
 
         private static short _keyCount;
         public static IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
         {
-            if (xmaslights.Properties.Settings.Default.BlinkAsYouType && _keyHit != null && ++_keyCount == 10)
+            if (xmaslights.Properties.Settings.Default.BlinkAsYouType && _keyHit != null && ++_keyCount == 5)
             {
                 _keyCount = 0;
                 Dispatcher.CurrentDispatcher.BeginInvoke(_keyHit, DispatcherPriority.Input);
             }
             return InterceptKeys.CallNextHookEx(_hookID, nCode, wParam, lParam);
+        }
+
+
+        private bool _firstException = true;
+        private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        {
+            lock (this)
+            {
+                if (_firstException)
+                {
+                    _firstException = false;
+                    foreach (Window w in this.Windows)
+                    {
+                        w.Close();
+                    }
+
+                    Exception exception = e.Exception;
+
+                    ExceptionReporting.Core.ExceptionReporter reporter = new ExceptionReporting.Core.ExceptionReporter();
+
+                    string email = "ChristmasLightsSupport@brokenwire.net";
+
+                    reporter.Config.ShowFullDetail = false;
+
+                    reporter.Config.EmailReportAddress = email;
+                    reporter.Config.WebUrl = "http://www.brokenwire.net/";
+
+                    reporter.Show(exception);
+                    
+                    Application.Current.Shutdown(1);
+                }
+                e.Handled = true;
+            }
         }
 
     }
