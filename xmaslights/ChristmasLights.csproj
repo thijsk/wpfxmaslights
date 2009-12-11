@@ -44,7 +44,7 @@
     <SupportUrl>http://www.brokenwire.net/</SupportUrl>
     <ProductName>ChristmasLights</ProductName>
     <PublisherName>Brokenwire.NET</PublisherName>
-    <ApplicationRevision>22</ApplicationRevision>
+    <ApplicationRevision>23</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -72,6 +72,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\AvalonLibrary\AvalonLibrary.dll</HintPath>
     </Reference>
+    <Reference Include="ExceptionReporter.WinForms, Version=2.1.0.0, Culture=neutral, PublicKeyToken=23251460c4e225c4, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -115,9 +116,13 @@
     </Compile>
     <Compile Include="BlinkPattern.cs" />
     <Compile Include="Controller.cs" />
+    <Compile Include="ILight.cs" />
+    <Compile Include="VectorLight.xaml.cs">
+      <DependentUpon>VectorLight.xaml</DependentUpon>
+    </Compile>
     <Compile Include="KeyboardHook.cs" />
-    <Compile Include="Light.xaml.cs">
-      <DependentUpon>Light.xaml</DependentUpon>
+    <Compile Include="BitmapLight.xaml.cs">
+      <DependentUpon>BitmapLight.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -140,7 +145,7 @@
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.config" />
@@ -161,7 +166,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Light.xaml">
+    <Page Include="VectorLight.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="BitmapLight.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -208,7 +217,12 @@
   <ItemGroup>
     <None Include="AvalonLibrary\AvalonLibrary.dll" />
     <None Include="AvalonLibrary\AvalonLibrary.pdb" />
+    <None Include="ExceptionReporter\ExceptionReporter.WinForms.dll" />
+    <Content Include="thankyou.htm" />
     <Content Include="publish.htm" />
+    <Resource Include="Resources\Santa-Claus.png" />
+    <Resource Include="Resources\LightRedSmall.png" />
+    <Resource Include="Resources\LightYellowSmall.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -42,7 +42,7 @@ namespace xmaslights
 
         private void OnNotifyIconDoubleClick(object sender, MouseButtonEventArgs e)
         {
-           // nothing to do
+            OnSettingsClick(null, null);
         }
 
         private void closeButton_Click(object sender, RoutedEventArgs e)
@@ -61,6 +61,13 @@ namespace xmaslights
         {
             AboutWindow about = new AboutWindow();
             about.Show();
+        }
+
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            e.Cancel = true;
+            this.Visibility = Visibility.Collapsed;
         }
 
         
