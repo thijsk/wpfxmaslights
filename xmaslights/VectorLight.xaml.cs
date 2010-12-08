@@ -128,5 +128,10 @@ namespace xmaslights
             return _isOn;
         }
 
+        public void Click()
+        {
+
+        }
+
     }
 }

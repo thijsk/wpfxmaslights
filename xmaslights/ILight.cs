@@ -19,5 +19,7 @@ namespace xmaslights
         void Rotate(int angle);
 
         bool IsOn();
+
+        void Click();
     }
 }

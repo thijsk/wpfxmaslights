@@ -26,6 +26,7 @@ namespace xmaslights
     {
         private static BitmapImage lightRed = new BitmapImage(new Uri("pack://application:,,,/ChristmasLights;Component/Resources/LightRedSmall.png"));
         private static BitmapImage lightYellow = new BitmapImage(new Uri("pack://application:,,,/ChristmasLights;Component/Resources/LightYellowSmall.png"));
+        private static BitmapImage lightBroken = new BitmapImage(new Uri("pack://application:,,,/ChristmasLights;Component/Resources/LightBrokenSmall.png"));
 
         static BitmapLight()
         {
@@ -39,9 +40,12 @@ namespace xmaslights
         {
             InitializeComponent();
             _isOn = false;
+            _isBroken = false;
         }
 
         private bool _isOn;
+        private int teller = 0;
+        private bool _isBroken;
 
         public void Switch()
         {
@@ -63,13 +67,16 @@ namespace xmaslights
 
         public void Update()
         {
-            if (_isOn)
-            {
-                this.lightImage.Source = lightYellow;
-            }
-            else
-            {
-                this.lightImage.Source = lightRed;
+            if (!_isBroken)
+            { 
+                if (_isOn)
+                {
+                    this.lightImage.Source = lightYellow;
+                }
+                else
+                {
+                    this.lightImage.Source = lightRed;
+                }
             }
         }
 
@@ -83,5 +90,16 @@ namespace xmaslights
             return _isOn;
         }
 
+     
+
+        public void Click()
+        {
+            teller++;
+            if (teller == 5)
+            {
+                this.lightImage.Source = lightBroken;
+                _isBroken = true;
+            }
+        }
     }
 }

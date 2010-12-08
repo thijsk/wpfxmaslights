@@ -11,6 +11,8 @@ using System.Windows.Threading;
 using WinForms = System.Windows.Forms;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
+using System.Windows.Input;
+using System.Threading.Tasks;
 
 namespace xmaslights
 {
@@ -113,7 +115,7 @@ namespace xmaslights
         {
             lock (_windows)
             {
-                _timer.Stop();
+                _timer.IsEnabled = false;
                 if (recreateBackgroundWindows)
                 {
                     RemoveBackgroundWindows();
@@ -126,7 +128,7 @@ namespace xmaslights
                 }
                 ReduceWorkingSet();
                 _lastShuffle = DateTime.Now;
-                _timer.Start();
+                _timer.IsEnabled = Properties.Settings.Default.TimerEnabled;
             }
         }
 
@@ -174,7 +176,7 @@ namespace xmaslights
                     Background = Brushes.Transparent,
                     Name = "ChristmasLights_Window" + screenNumber++.ToString(),
                     Screen = s,
-                    Owner = _alttabhider
+                    Owner = _alttabhider 
                 };
                 _windows.Add(m);
                 m.Show();
@@ -292,7 +294,7 @@ namespace xmaslights
         {
             lock (_windows)
             {
-                if (_lastShuffle.AddMinutes(1) <= DateTime.Now)
+                if ((Properties.Settings.Default.BurninPrevention) && _lastShuffle.AddMinutes(1) <= DateTime.Now)
                 {
                     PopulateWindows(false);
                 }
@@ -398,6 +400,35 @@ namespace xmaslights
         internal void KeyHit()
         {
             Tick();
+        }
+
+        public DependencyObject FindObject<T>(DependencyObject obj)
+        {
+            if (obj is T)
+            {
+                return obj;
+            }
+            else
+            {
+                var parent = VisualTreeHelper.GetParent(obj);
+                if (parent != null)
+                    return FindObject<T>(parent);
+                else
+                    return null;
+            }
+        }
+     
+        internal void MouseClick(Point point)
+        {
+            var result = VisualTreeHelper.HitTest(this._windows[0], this._windows[0].PointFromScreen(point));
+            if (result != null && result.VisualHit != null && result.VisualHit is Image)
+            {
+                var lampje = (ILight)FindObject<ILight>(result.VisualHit);
+                if (lampje != null)
+                { 
+                    lampje.Click();
+                }
+            }
         }
 
         [DllImport("kernel32")]
