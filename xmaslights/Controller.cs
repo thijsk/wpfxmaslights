@@ -27,10 +27,12 @@ namespace xmaslights
         private bool skip = false;
         private DateTime _lastShuffle;
         private TimeSpan _timerInterval;
+        private Hooks _hooks;
+        private Dispatcher _dispatcher;
 
         public Controller()
         {
-            
+            _dispatcher = Dispatcher.CurrentDispatcher;
             CreateAltTabHiderWindow();
             CreateSettingsWindow();
 
@@ -49,17 +51,54 @@ namespace xmaslights
             SystemEvents.DisplaySettingsChanged += new EventHandler(SystemEvents_DisplaySettingsChanged);
             SystemEvents.DisplaySettingsChanging += new EventHandler(SystemEvents_DisplaySettingsChanging);
             SystemEvents.SessionSwitch += new SessionSwitchEventHandler(SystemEvents_SessionSwitch);
-            
+
+            _hooks = new Hooks();
+            _hooks.OnKeyUp += new Hooks.KeyUpEvent(_hooks_OnKeyUp);
+            _hooks.OnMouseUp += new Hooks.MouseUpEvent(_hooks_OnMouseUp);
+            SetHooks(Properties.Settings.Default.BlinkAsYouType, true);
+
             StartTimer();
+        }
+
+        private void SetHooks(bool keyenabled, bool mouseenabled)
+        {
+            if (keyenabled)
+            {
+                _hooks.SetBackgroundGlobalLLKeyboardHook();
+            }
+            else
+            {
+                _hooks.RemoveBackgroundGlobalLLKeyboardHook();
+            }
+
+            if (mouseenabled)
+            {
+                _hooks.SetBackgroundGlobalLLMouseHook();
+            }
+            else
+            {
+                _hooks.RemoveBackgroundGlobalLLMouseHook();
+            }
+        }
+
+        void _hooks_OnMouseUp(Point pt)
+        {
+            _dispatcher.BeginInvoke(new Action<Point>(MouseClick), DispatcherPriority.SystemIdle, pt);
+        }
+
+        private void _hooks_OnKeyUp()
+        {
+            _dispatcher.BeginInvoke(new Action(KeyHit), DispatcherPriority.SystemIdle, null);
         }
 
         ~Controller()
         {
+            _hooks.RemoveBackgroundGlobalLLKeyboardHook();
+            _hooks.RemoveBackgroundGlobalLLMouseHook();
             SystemEvents.DisplaySettingsChanged -= new EventHandler(SystemEvents_DisplaySettingsChanged);
             SystemEvents.DisplaySettingsChanging -= new EventHandler(SystemEvents_DisplaySettingsChanging);
             SystemEvents.SessionSwitch -= new SessionSwitchEventHandler(SystemEvents_SessionSwitch);
         }
-
 
         void SystemEvents_DisplaySettingsChanged(object sender, EventArgs e)
         {
@@ -107,6 +146,9 @@ namespace xmaslights
                 case "LightSpacing":
                     _lightSpacing = (int)e.NewValue;
                     PopulateWindows(false);
+                    break;
+                case "BlinkAsYouType":
+                    SetHooks((bool)e.NewValue, true);
                     break;
             }
         }

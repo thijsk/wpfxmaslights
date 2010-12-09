@@ -32,17 +32,8 @@ namespace xmaslights
 
             this.controller = c;
             this.DataContext = controller;
-
-            this.MouseUp += new MouseButtonEventHandler(BackWindow_MouseUp);
         }
 
-        void BackWindow_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            Debug.WriteLine(e.GetPosition(this));
-            e.Handled = true;
-        }
-
-        
         public const int WS_EX_NOACTIVATE = 0x08000000;
         public const int WS_EX_TRANSPARENT = 0x00000020;
         public const int GWL_EXSTYLE = (-20);
@@ -94,26 +85,6 @@ namespace xmaslights
             int extendedStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
             SetWindowLong(hwnd, GWL_EXSTYLE, extendedStyle | flags);
         }
-
-        //private static IntPtr AddWndProc(Window window)
-        //{
-        //    IntPtr hwnd = new WindowInteropHelper(window).Handle;
-        //    HwndSource source = HwndSource.FromHwnd(hwnd);
-        //    source.AddHook(new HwndSourceHook(WndProc));
-        //    return hwnd;
-        //}
-
-        //private static IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
-        //{
-        //    Debug.WriteLine(msg.ToString());
-        //    if (msg == (int)WM.MOUSEMOVE)
-        //    {
-        //        Debug.WriteLine("MM");
-
-        //    }
-        //    handled = false;
-        //    return IntPtr.Zero;
-        //}
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
