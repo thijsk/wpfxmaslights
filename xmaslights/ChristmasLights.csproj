@@ -120,7 +120,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="WindowsMessages.cs" />
+    <Compile Include="Hooks.cs" />
+    <Compile Include="Win32\HookNative.cs" />
+    <Compile Include="Win32\NativeMethod.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AboutWindow.xaml.cs">
@@ -132,7 +134,6 @@
     <Compile Include="VectorLight.xaml.cs">
       <DependentUpon>VectorLight.xaml</DependentUpon>
     </Compile>
-    <Compile Include="GlobalHooks.cs" />
     <Compile Include="BitmapLight.xaml.cs">
       <DependentUpon>BitmapLight.xaml</DependentUpon>
     </Compile>
