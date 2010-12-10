@@ -242,6 +242,9 @@
     <None Include="AvalonLibrary\AvalonLibrary.dll" />
     <None Include="AvalonLibrary\AvalonLibrary.pdb" />
     <None Include="ExceptionReporter\ExceptionReporter.WinForms.dll" />
+    <Content Include="Resources\glass_break_1.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="thankyou.htm" />
     <Content Include="publish.htm" />
     <Resource Include="Resources\Santa-Claus.png" />

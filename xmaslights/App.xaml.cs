@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Threading;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace xmaslights
 {
@@ -27,7 +28,7 @@ namespace xmaslights
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            Controller c = new Controller();
+             Controller c = new Controller();
         }
 
         private bool _firstException = true;

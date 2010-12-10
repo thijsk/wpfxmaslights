@@ -29,6 +29,7 @@ namespace xmaslights
         private TimeSpan _timerInterval;
         private Hooks _hooks;
         private Dispatcher _dispatcher;
+        private MediaPlayer _player;
 
         public Controller()
         {
@@ -53,11 +54,14 @@ namespace xmaslights
             SystemEvents.SessionSwitch += new SessionSwitchEventHandler(SystemEvents_SessionSwitch);
 
             _hooks = new Hooks();
-            _hooks.OnKeyUp += new Hooks.KeyUpEvent(_hooks_OnKeyUp);
-            _hooks.OnMouseUp += new Hooks.MouseUpEvent(_hooks_OnMouseUp);
+            _hooks.OnKeyUp += new Hooks.KeyUpEvent(delegate { _dispatcher.BeginInvoke(new Action(KeyHit), DispatcherPriority.SystemIdle, null); });
+            _hooks.OnMouseUp += new Hooks.MouseUpEvent(delegate(Point pt) { _dispatcher.BeginInvoke(new Action<Point>(MouseClick), DispatcherPriority.SystemIdle, pt); });
             SetHooks(Properties.Settings.Default.BlinkAsYouType, true);
 
             StartTimer();
+            //_player = new MediaPlayer();
+            //_player.Open(new Uri("http://www.sky.fm/wma/christmas.asx"));
+            //_player.Play();
         }
 
         private void SetHooks(bool keyenabled, bool mouseenabled)
@@ -81,16 +85,6 @@ namespace xmaslights
             }
         }
 
-        void _hooks_OnMouseUp(Point pt)
-        {
-            _dispatcher.BeginInvoke(new Action<Point>(MouseClick), DispatcherPriority.SystemIdle, pt);
-        }
-
-        private void _hooks_OnKeyUp()
-        {
-            _dispatcher.BeginInvoke(new Action(KeyHit), DispatcherPriority.SystemIdle, null);
-        }
-
         ~Controller()
         {
             _hooks.RemoveBackgroundGlobalLLKeyboardHook();
@@ -110,7 +104,6 @@ namespace xmaslights
             RemoveBackgroundWindows();
         }
         
-
         void SystemEvents_SessionSwitch(object sender, SessionSwitchEventArgs e)
         {
             switch (e.Reason)
@@ -194,7 +187,7 @@ namespace xmaslights
             _timerInterval = new TimeSpan(0, 0, 0, 0, Properties.Settings.Default.Speed);  
 
             _timer.Interval = _timerInterval;
-            _timer.Tick += new EventHandler(timer_Tick);
+            _timer.Tick += new EventHandler(delegate(object o, EventArgs e){ Dispatcher.CurrentDispatcher.BeginInvoke(new Action(Tick), DispatcherPriority.SystemIdle); });
             _timer.Start();
             _timer.IsEnabled = Properties.Settings.Default.TimerEnabled;
         }
@@ -292,7 +285,7 @@ namespace xmaslights
             m.CurrentLight = 0;
         }
 
-        private static ILight CreateLight()
+        private ILight CreateLight()
         {
             BitmapLight l = new BitmapLight();
             //VectorLight l = new VectorLight();
@@ -325,11 +318,6 @@ namespace xmaslights
             Properties.Settings.Default.Save();
             System.Diagnostics.Process.Start("http://www.brokenwire.net/ChristmasLights/thankyou.htm");
             _settingsWindow.Visibility = Visibility.Visible;
-        }
-
-        void timer_Tick(object sender, EventArgs e)
-        {
-            Application.Current.Dispatcher.BeginInvoke(new Action(Tick), DispatcherPriority.SystemIdle);
         }
 
         private void Tick()
