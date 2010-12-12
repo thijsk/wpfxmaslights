@@ -45,14 +45,14 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <InstallUrl>http://www.brokenwire.net/ChristmasLights/</InstallUrl>
+    <InstallUrl>http://wpfxmaslights.codeplex.com/releases/clickonce/</InstallUrl>
     <SupportUrl>http://www.brokenwire.net/</SupportUrl>
     <ProductName>ChristmasLights</ProductName>
     <PublisherName>Brokenwire.NET</PublisherName>
     <WebPage>publish.htm</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
     <ApplicationRevision>29</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <ApplicationVersion>1.0.0.29</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
