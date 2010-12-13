@@ -31,48 +31,48 @@ namespace xmaslights
 		/// Set global low-level mouse hook, running in a separate background thread
 		/// </summary>
 		/// <returns></returns>
-        private void SetBackgroundHook(Action set, Action remove, Action<Dispatcher> saveDispatcher)
-        {
-            Thread backgroundThread = new Thread(() =>
-            {
-                Dispatcher threadDispatcher = Dispatcher.CurrentDispatcher;
-                saveDispatcher(threadDispatcher);
-                threadDispatcher.BeginInvoke(new Action(() =>
-                {
-                    set();
-                }));
-                Dispatcher.Run();
-                remove();
-            });
-            backgroundThread.IsBackground = true;
-            backgroundThread.SetApartmentState(ApartmentState.STA);
-            backgroundThread.Priority = ThreadPriority.AboveNormal;
-            backgroundThread.Start();
-        }
+		private void SetBackgroundHook(Action set, Action remove, Action<Dispatcher> saveDispatcher)
+		{
+			Thread backgroundThread = new Thread(() =>
+			{
+				Dispatcher threadDispatcher = Dispatcher.CurrentDispatcher;
+				saveDispatcher(threadDispatcher);
+				threadDispatcher.BeginInvoke(new Action(() =>
+				{
+					set();
+				}));
+				Dispatcher.Run();
+				remove();
+			});
+			backgroundThread.IsBackground = true;
+			backgroundThread.SetApartmentState(ApartmentState.STA);
+			backgroundThread.Priority = ThreadPriority.AboveNormal;
+			backgroundThread.Start();
+		}
 			
 
 		public void SetBackgroundGlobalLLMouseHook()
-        {
-            RemoveBackgroundGlobalLLMouseHook();
+		{
+			RemoveBackgroundGlobalLLMouseHook();
 			SetBackgroundHook(new Action(() => { SetGlobalLLMouseHook(); }), new Action(() => { RemoveGlobalLLMouseHook(); }), SaveMouseDispatcher);
 		}
 	  
 
 		public void SetBackgroundGlobalLLKeyboardHook()
 		{
-            RemoveBackgroundGlobalLLKeyboardHook();
-            SetBackgroundHook(new Action(() => { SetGlobalLLKeyboardHook(); }), new Action(() => { RemoveGlobalLLKeyboardHook(); }), SaveKeyboardDispatcher);
+			RemoveBackgroundGlobalLLKeyboardHook();
+			SetBackgroundHook(new Action(() => { SetGlobalLLKeyboardHook(); }), new Action(() => { RemoveGlobalLLKeyboardHook(); }), SaveKeyboardDispatcher);
 		}
 
-        private void SaveMouseDispatcher(Dispatcher saveDispatcher)
-        {
-            this._backgroundMouseDispatcher = saveDispatcher;
-        }
+		private void SaveMouseDispatcher(Dispatcher saveDispatcher)
+		{
+			this._backgroundMouseDispatcher = saveDispatcher;
+		}
 
-        private void SaveKeyboardDispatcher(Dispatcher saveDispatcher)
-        {
-            this._backgroundKeyboardDispatcher = saveDispatcher;
-        }
+		private void SaveKeyboardDispatcher(Dispatcher saveDispatcher)
+		{
+			this._backgroundKeyboardDispatcher = saveDispatcher;
+		}
 
 		/// <summary>
 		/// Set global low-level mouse hook

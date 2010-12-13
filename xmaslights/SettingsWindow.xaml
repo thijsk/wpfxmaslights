@@ -5,7 +5,8 @@
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
     xmlns:xmas="clr-namespace:xmaslights"
     xmlns:local="clr-namespace:xmaslights.Properties"
-    Title="Settings" Height="307" Width="545" Visibility="Collapsed" WindowStyle="ToolWindow" Closing="Window_Closing">
+    Title="Christmas Lights - Settings" Height="307" Width="545" Visibility="Collapsed" WindowStyle="ToolWindow" Closing="Window_Closing"
+    Icon="/ChristmasLights;component/Resources/Wreath.ico" >
     <Window.Resources>
         <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="BlinkPatternValues">
             <ObjectDataProvider.MethodParameters>
@@ -19,15 +20,6 @@
             <ColumnDefinition Width="422*" />
             <ColumnDefinition Width="230*" />
         </Grid.ColumnDefinitions>
-        <av:NotifyIcon Name="notifyIcon" Text="{Binding ElementName=tipText,Path=Text}" Visibility="Visible" MouseDoubleClick="OnNotifyIconDoubleClick"  Icon="/ChristmasLights;component/Resources/TrayIcon.ico" Grid.ColumnSpan="2">
-            <FrameworkElement.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Settings..." Click="OnSettingsClick" />
-                    <MenuItem Header="About..." Click="OnAboutClick" />
-                    <MenuItem Header="Exit" Click="OnExitClick" />
-                </ContextMenu>
-            </FrameworkElement.ContextMenu>
-        </av:NotifyIcon>
         <Button Height="23" Margin="0,0,88,9" Name="closeButton" VerticalAlignment="Bottom" Click="closeButton_Click" HorizontalAlignment="Right" Width="73">OK</Button>
         <Label Height="28" Margin="12,12,0,0" Name="label1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="120">Blinking mode:</Label>
         <ComboBox Height="28" Margin="138,12,0,0" Name="comboBox1" VerticalAlignment="Top" ItemsSource="{Binding Source={StaticResource BlinkPatternValues}}" SelectedValue="{Binding Source={StaticResource settings}, Path=Default.BlinkPattern}" />

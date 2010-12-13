@@ -16,7 +16,8 @@
     <WarningLevel>4</WarningLevel>
     <StartupObject>xmaslights.App</StartupObject>
     <IsWebBootstrapper>true</IsWebBootstrapper>
-    <ApplicationIcon>Resources\TrayIcon.ico</ApplicationIcon>
+    <ApplicationIcon>
+    </ApplicationIcon>
     <ManifestCertificateThumbprint>FCEA89DB568A12033978DD6C0A4918C906F47A2B</ManifestCertificateThumbprint>
     <ManifestKeyFile>brokenwire.pfx</ManifestKeyFile>
     <GenerateManifests>true</GenerateManifests>
@@ -77,12 +78,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AvalonLibrary, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b5d01516e28df45f, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\AvalonLibrary\AvalonLibrary.dll</HintPath>
-    </Reference>
+    <Reference Include="Bass.Net, Version=2.4.7.0, Culture=neutral, PublicKeyToken=b7566c273e6ef480, processorArchitecture=MSIL" />
     <Reference Include="ExceptionReporter.WinForms, Version=2.1.0.0, Culture=neutral, PublicKeyToken=23251460c4e225c4, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -123,7 +122,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Bass\BeatDetector.cs" />
     <Compile Include="Hooks.cs" />
+    <Compile Include="SingleInstance.cs" />
     <Compile Include="Win32\HookNative.cs" />
     <Compile Include="Win32\NativeMethod.cs" />
   </ItemGroup>
@@ -134,9 +135,6 @@
     <Compile Include="BlinkPattern.cs" />
     <Compile Include="Controller.cs" />
     <Compile Include="ILight.cs" />
-    <Compile Include="VectorLight.xaml.cs">
-      <DependentUpon>VectorLight.xaml</DependentUpon>
-    </Compile>
     <Compile Include="BitmapLight.xaml.cs">
       <DependentUpon>BitmapLight.xaml</DependentUpon>
     </Compile>
@@ -181,12 +179,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="BackWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="VectorLight.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -249,17 +241,24 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\LightBrokenSmall.png" />
-    <Resource Include="Resources\TrayIcon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="AvalonLibrary\AvalonLibrary.dll" />
-    <None Include="AvalonLibrary\AvalonLibrary.pdb" />
+    <Resource Include="Resources\Wreath.ico" />
+    <None Include="Resources\Tree.ico" />
     <None Include="ExceptionReporter\ExceptionReporter.WinForms.dll" />
-    <Content Include="Resources\glass_break_1.mp3">
+    <Resource Include="Resources\Candy-Cane.png" />
+    <Resource Include="Resources\LightClearSmall.png" />
+    <Content Include="bass.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="thankyou.htm" />
-    <None Include="publish.htm" />
+    <Content Include="bass_fx.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\glass_break_1.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="Webpages\thankyou.htm" />
+    <None Include="Webpages\publish.htm" />
     <Resource Include="Resources\Santa-Claus.png" />
     <Resource Include="Resources\LightRedSmall.png" />
     <Resource Include="Resources\LightYellowSmall.png" />

@@ -16,6 +16,8 @@ namespace xmaslights
     /// </summary>
     public partial class App : Application
     {
+        private Controller c;
+
         public App()
         {
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
@@ -28,7 +30,20 @@ namespace xmaslights
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-             Controller c = new Controller();
+            if (SingleInstance.IsFirstInstance("10aa2e8e-c2c8-4205-ae55-ac19d925e9eb"))
+            {
+                CreateMainWindow();
+                c = new Controller();
+            }
+            else
+            {
+                this.Shutdown();
+            }
+        }
+
+        private void Application_Exit(object sender, ExitEventArgs e)
+        {
+            SingleInstance.Close();
         }
 
         private bool _firstException = true;
@@ -45,23 +60,34 @@ namespace xmaslights
                     }
 
                     Exception exception = e.Exception;
-
                     ExceptionReporting.Core.ExceptionReporter reporter = new ExceptionReporting.Core.ExceptionReporter();
-
-                    string email = "ChristmasLightsSupport@brokenwire.net";
-
                     reporter.Config.ShowFullDetail = false;
-
-                    reporter.Config.EmailReportAddress = email;
+                    reporter.Config.EmailReportAddress = "ChristmasLightsSupport@brokenwire.net";
                     reporter.Config.WebUrl = "http://www.brokenwire.net/";
-
                     reporter.Show(exception);
                     
-                    Application.Current.Shutdown(1);
+                    this.Shutdown(1);
                 }
                 e.Handled = true;
             }
         }
+
+        private void CreateMainWindow()
+        {
+            Application.Current.MainWindow = new Window()
+            {
+                Top = -1,
+                Left = -1,
+                Width = 1,
+                Height = 1,
+                WindowStyle = WindowStyle.ToolWindow
+            };
+            Application.Current.MainWindow.ShowInTaskbar = false;
+            Application.Current.MainWindow.Show();
+            Application.Current.MainWindow.Hide();
+        }
+
+    
 
     }
 

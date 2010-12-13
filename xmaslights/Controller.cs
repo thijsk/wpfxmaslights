@@ -13,12 +13,13 @@ using System.Runtime.InteropServices;
 using Microsoft.Win32;
 using System.Windows.Input;
 using System.Threading.Tasks;
+using BeatDetect;
+using System.Threading;
 
 namespace xmaslights
 {
     public class Controller
     {
-        private Window _alttabhider;
         private readonly List<BackWindow> _windows = new List<BackWindow>();
         private int _lightSpacing;
         private SettingsWindow _settingsWindow;
@@ -29,21 +30,28 @@ namespace xmaslights
         private TimeSpan _timerInterval;
         private Hooks _hooks;
         private Dispatcher _dispatcher;
-        private MediaPlayer _player;
+        private WinForms.NotifyIcon _trayIcon;
+        private BeatDetector _beatDetector;
 
         public Controller()
         {
             _dispatcher = Dispatcher.CurrentDispatcher;
-            CreateAltTabHiderWindow();
             CreateSettingsWindow();
+            CreateTrayIcon();
+            
+            _rnd = new Random();
+            _timer = new DispatcherTimer();
+            _beatDetector = new BeatDetector();
+            _beatDetector.OnBeat += new Action(delegate { _dispatcher.BeginInvoke(new Action(_beatDetector_OnBeat), DispatcherPriority.SystemIdle, null); });
+          
+            _hooks = new Hooks();
+            _hooks.OnKeyUp += new Hooks.KeyUpEvent(delegate { _dispatcher.BeginInvoke(new Action(KeyHit), DispatcherPriority.SystemIdle, null); });
+            _hooks.OnMouseUp += new Hooks.MouseUpEvent(delegate(Point pt) { _dispatcher.BeginInvoke(new Action<Point>(MouseClick), DispatcherPriority.SystemIdle, pt); });
 
             if (Properties.Settings.Default.FirstRun)
                 SetupFirstRun();
 
             Properties.Settings.Default.SettingChanging += new System.Configuration.SettingChangingEventHandler(Default_SettingChanging);
-
-            _rnd = new Random();
-            _timer = new DispatcherTimer();
             _lightSpacing = Properties.Settings.Default.LightSpacing;
             
             AddChristmasLightsWindows();
@@ -53,15 +61,84 @@ namespace xmaslights
             SystemEvents.DisplaySettingsChanging += new EventHandler(SystemEvents_DisplaySettingsChanging);
             SystemEvents.SessionSwitch += new SessionSwitchEventHandler(SystemEvents_SessionSwitch);
 
-            _hooks = new Hooks();
-            _hooks.OnKeyUp += new Hooks.KeyUpEvent(delegate { _dispatcher.BeginInvoke(new Action(KeyHit), DispatcherPriority.SystemIdle, null); });
-            _hooks.OnMouseUp += new Hooks.MouseUpEvent(delegate(Point pt) { _dispatcher.BeginInvoke(new Action<Point>(MouseClick), DispatcherPriority.SystemIdle, pt); });
-            SetHooks(Properties.Settings.Default.BlinkAsYouType, true);
 
+            _beatDetector.Start();
+            SetHooks(Properties.Settings.Default.BlinkAsYouType, true);
             StartTimer();
             //_player = new MediaPlayer();
             //_player.Open(new Uri("http://www.sky.fm/wma/christmas.asx"));
             //_player.Play();
+
+            Debug.Write("Start");
+            Debug.WriteLine(System.Threading.Thread.CurrentThread.ManagedThreadId);
+        }
+
+
+        ~Controller()
+        {
+            _beatDetector.Stop();   
+            _hooks.RemoveBackgroundGlobalLLKeyboardHook();
+            _hooks.RemoveBackgroundGlobalLLMouseHook();
+            SystemEvents.DisplaySettingsChanged -= new EventHandler(SystemEvents_DisplaySettingsChanged);
+            SystemEvents.DisplaySettingsChanging -= new EventHandler(SystemEvents_DisplaySettingsChanging);
+            SystemEvents.SessionSwitch -= new SessionSwitchEventHandler(SystemEvents_SessionSwitch);
+        }
+
+        private void CreateTrayIcon()
+        {
+            _trayIcon = new WinForms.NotifyIcon();
+            _trayIcon.MouseDoubleClick += new WinForms.MouseEventHandler(this.NotifyIcon_DoubleClick);
+            _trayIcon.Icon = Properties.Resources.Tree;
+            _trayIcon.Text = "Christmas Lights";
+            _trayIcon.ContextMenuStrip = this.CreateContextMenu();
+            _trayIcon.Visible = true;
+        }
+
+        private WinForms.ContextMenuStrip CreateContextMenu()
+        {
+            WinForms.ContextMenuStrip menu = new WinForms.ContextMenuStrip();
+            WinForms.ToolStripSeparator mnuSeparator = new WinForms.ToolStripSeparator();
+            WinForms.ToolStripMenuItem mnuSettings = new WinForms.ToolStripMenuItem("Settings...");
+            WinForms.ToolStripMenuItem mnuAbout = new WinForms.ToolStripMenuItem("About...");
+            WinForms.ToolStripMenuItem mnuExit = new WinForms.ToolStripMenuItem("Exit");
+            mnuExit.Font = new System.Drawing.Font(System.Drawing.SystemFonts.MenuFont, System.Drawing.FontStyle.Bold);
+            mnuExit.Click += this.Exit_Click;
+            mnuAbout.Click += this.About_Click;
+            mnuSettings.Click += this.Settings_Click;
+            menu.Items.Add(mnuSettings);
+            menu.Items.Add(mnuAbout);
+            menu.Items.Add(mnuSeparator);
+            menu.Items.Add(mnuExit);
+            return menu;
+        }
+
+        private void NotifyIcon_DoubleClick(object sender, WinForms.MouseEventArgs e)
+        {
+            if (e.Button == WinForms.MouseButtons.Left)
+            {
+                this.Settings_Click(null, null);
+            }
+        }
+
+        private void Exit_Click(object sender, EventArgs e)
+        {
+            _trayIcon.Visible = false;
+            RemoveBackgroundWindows();
+            Application.Current.MainWindow.Close();
+            Application.Current.Shutdown();
+        }
+
+        private void Settings_Click(object sender, EventArgs e)
+        {
+            _settingsWindow.Show();
+            _settingsWindow.Activate();
+        }
+
+        private void About_Click(object sender, EventArgs e)
+        {
+            AboutWindow about = new AboutWindow();
+            about.Owner = Application.Current.MainWindow;
+            about.ShowDialog();
         }
 
         private void SetHooks(bool keyenabled, bool mouseenabled)
@@ -85,14 +162,7 @@ namespace xmaslights
             }
         }
 
-        ~Controller()
-        {
-            _hooks.RemoveBackgroundGlobalLLKeyboardHook();
-            _hooks.RemoveBackgroundGlobalLLMouseHook();
-            SystemEvents.DisplaySettingsChanged -= new EventHandler(SystemEvents_DisplaySettingsChanged);
-            SystemEvents.DisplaySettingsChanging -= new EventHandler(SystemEvents_DisplaySettingsChanging);
-            SystemEvents.SessionSwitch -= new SessionSwitchEventHandler(SystemEvents_SessionSwitch);
-        }
+     
 
         void SystemEvents_DisplaySettingsChanged(object sender, EventArgs e)
         {
@@ -178,8 +248,8 @@ namespace xmaslights
         private void CreateSettingsWindow()
         {
             _settingsWindow = new SettingsWindow(this);
-            _settingsWindow.Owner = _alttabhider;
-            _settingsWindow.notifyIcon.Visibility = Visibility.Hidden;
+            _settingsWindow.Owner = Application.Current.MainWindow;
+            _settingsWindow.Hide();
         }
 
         private void StartTimer()
@@ -211,7 +281,7 @@ namespace xmaslights
                     Background = Brushes.Transparent,
                     Name = "ChristmasLights_Window" + screenNumber++.ToString(),
                     Screen = s,
-                    Owner = _alttabhider 
+                    Owner = Application.Current.MainWindow 
                 };
                 _windows.Add(m);
                 m.Show();
@@ -288,24 +358,9 @@ namespace xmaslights
         private ILight CreateLight()
         {
             BitmapLight l = new BitmapLight();
-            //VectorLight l = new VectorLight();
             RenderOptions.SetBitmapScalingMode(l, BitmapScalingMode.LowQuality);
             RenderOptions.SetEdgeMode(l, EdgeMode.Aliased);
             return l;
-        }
-
-        private void CreateAltTabHiderWindow()
-        {
-            _alttabhider = new Window()
-            {
-                Top = -1,
-                Left = -1,
-                Width = 1,
-                Height = 1,
-                WindowStyle = WindowStyle.ToolWindow
-            };
-            _alttabhider.Show();
-            _alttabhider.Hide();
         }
 
         private void SetupFirstRun()
@@ -322,9 +377,14 @@ namespace xmaslights
 
         private void Tick()
         {
+            if (this._dispatcher.Thread != Thread.CurrentThread)
+            {
+                _dispatcher.BeginInvoke(new Action(Tick), DispatcherPriority.SystemIdle, null);
+                return;
+            }
             lock (_windows)
             {
-                if ((Properties.Settings.Default.BurninPrevention) && _lastShuffle.AddMinutes(1) <= DateTime.Now)
+                if ((Properties.Settings.Default.BurninPrevention) && _lastShuffle.AddMinutes(5) <= DateTime.Now)
                 {
                     PopulateWindows(false);
                 }
@@ -448,27 +508,45 @@ namespace xmaslights
             }
         }
      
-        internal void MouseClick(Point point)
+        private void MouseClick(Point point)
         {
-            var result = VisualTreeHelper.HitTest(this._windows[0], this._windows[0].PointFromScreen(point));
-            if (result != null && result.VisualHit != null && result.VisualHit is Image)
+            Debug.Write("Click");
+            Debug.WriteLine(System.Threading.Thread.CurrentThread.ManagedThreadId);
+            foreach (var window in this._windows)
             {
-                var lampje = (ILight)FindObject<ILight>(result.VisualHit);
-                if (lampje != null)
-                { 
-                    lampje.Click();
+                try
+                {
+                    var result = VisualTreeHelper.HitTest(window, window.PointFromScreen(point));
+                    if (result != null && result.VisualHit != null && result.VisualHit is Image)
+                    {
+                        var lampje = (ILight)FindObject<ILight>(result.VisualHit);
+                        if (lampje != null)
+                        {
+                            lampje.Click();
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine(e);
                 }
             }
         }
 
-        [DllImport("kernel32")]
-        static extern bool SetProcessWorkingSetSize(IntPtr handle, int minSize, int maxSize);
+
+        private void _beatDetector_OnBeat()
+        {
+            Debug.Write("Beat");
+            Debug.WriteLine(System.Threading.Thread.CurrentThread.ManagedThreadId);
+            Tick();
+        }
+
         private static void ReduceWorkingSet()
         {
             // To keep ppl from getting shocked when looking in the task manager.
             using (Process process = Process.GetCurrentProcess())
             {
-                SetProcessWorkingSetSize(process.Handle, -1, -1);
+                NativeMethod.SetProcessWorkingSetSize(process.Handle, -1, -1);
             }
         }
 

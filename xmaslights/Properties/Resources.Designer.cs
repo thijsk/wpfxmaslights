@@ -60,9 +60,9 @@ namespace xmaslights.Properties {
             }
         }
         
-        public static System.Drawing.Icon TrayIcon {
+        public static System.Drawing.Icon Tree {
             get {
-                object obj = ResourceManager.GetObject("TrayIcon", resourceCulture);
+                object obj = ResourceManager.GetObject("Tree", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }
