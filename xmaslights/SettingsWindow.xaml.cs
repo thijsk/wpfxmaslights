@@ -29,22 +29,7 @@ namespace xmaslights
             this.DataContext = controller;
             InitializeComponent();
         }
-
-        private void OnExitClick(object sender, RoutedEventArgs e)
-        {
-            Application.Current.Shutdown();
-        }
-
-        private void OnSettingsClick(object sender, RoutedEventArgs e)
-        {
-            this.Visibility = Visibility.Visible;
-        }
-
-        private void OnNotifyIconDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            OnSettingsClick(null, null);
-        }
-
+        
         private void closeButton_Click(object sender, RoutedEventArgs e)
         {
             Settings.Default.Save();
@@ -56,13 +41,6 @@ namespace xmaslights
             Settings.Default.Reload();
             this.Visibility = Visibility.Collapsed;
         }
-
-        private void OnAboutClick(object sender, RoutedEventArgs e)
-        {
-            AboutWindow about = new AboutWindow();
-            about.Show();
-        }
-
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {

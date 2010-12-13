@@ -110,4 +110,6 @@ internal class NativeMethod
     public static extern int CallNextHookEx(IntPtr hhk, int nCode,
         IntPtr wParam, IntPtr lParam);
 
+    [DllImport("kernel32", CharSet = CharSet.Auto)]
+    public static extern bool SetProcessWorkingSetSize(IntPtr handle, int minSize, int maxSize);
 }
