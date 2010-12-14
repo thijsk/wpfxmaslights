@@ -491,6 +491,9 @@ namespace xmaslights
                         case BlinkPattern.Random:
                             Random();
                             break;
+                        case BlinkPattern.KnightRider:
+                            KnightRider();
+                            break;
                         default:
                             AllOnOff();
                             break;
@@ -534,7 +537,9 @@ namespace xmaslights
 
         private int FindLight(BackWindow w, int offset, int step)
         {
-            return (((w.CurrentLight + offset) - step) + w.LightsCount) % w.LightsCount;
+            int found = (((w.CurrentLight + offset) + step) + w.LightsCount) % w.LightsCount;
+            Debug.WriteLine(found);
+            return found;
         }
 
         private int PreviousLight(BackWindow w)
@@ -560,6 +565,21 @@ namespace xmaslights
 
                 w.Lights[PreviousLight(w)].Off();
                 w.Lights[NextLight(w)].On();
+                w.CurrentLight = NextLight(w);
+            }
+        }
+
+        private void KnightRider()
+        {
+            foreach (BackWindow w in this._windows)
+            {
+                int offset = w.LightsCount - w.CurrentLight;
+                int width = w.LightsCount / 4;
+                w.Lights[FindLight(w, offset, offset)].Off();
+                w.Lights[FindLight(w, 0, -1)].Off();
+                w.Lights[FindLight(w, offset, offset -  (2+width))].On();
+                w.Lights[FindLight(w, 0, 1 + width)].On();
+                
                 w.CurrentLight = NextLight(w);
             }
         }
