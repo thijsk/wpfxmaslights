@@ -11,6 +11,7 @@ namespace xmaslights
         Blink,
         Walking,
         Interlaced,
-        Random
+        Random,
+        KnightRider
     }
 }
