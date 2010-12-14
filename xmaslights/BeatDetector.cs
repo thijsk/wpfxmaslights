@@ -28,6 +28,11 @@ namespace xmaslights
             BassNet.Registration(str[0], str[1]);
         }
 
+        public static void ShowAbout()
+        {
+            BassNet.ShowAbout(null);
+        }
+
         public BeatDetector()
         {
             Bass.BASS_SetConfig(BASSConfig.BASS_CONFIG_UPDATEPERIOD, 0);
@@ -57,8 +62,10 @@ namespace xmaslights
             int deviceid = 0;
             foreach (var device in BassWasapi.BASS_WASAPI_GetDeviceInfos())
             {
-                if (device.IsInput && device.IsLoopback)
+                if (device.IsInput && device.IsLoopback && device.IsEnabled && device.name.StartsWith("Speaker"))
+                {
                     break;
+                }
                 deviceid++;
             }
             _wasapi = new BassWasapiHandler(deviceid, false, 48000, 2, 0, 0);

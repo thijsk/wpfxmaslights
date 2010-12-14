@@ -21,6 +21,7 @@ namespace xmaslights
         public App()
         {
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
+            c = new Controller();
         }
 
         ~App()
@@ -33,7 +34,7 @@ namespace xmaslights
             if (SingleInstance.IsFirstInstance("10aa2e8e-c2c8-4205-ae55-ac19d925e9eb"))
             {
                 CreateMainWindow();
-                c = new Controller();
+                c.Start();
             }
             else
             {
@@ -43,6 +44,7 @@ namespace xmaslights
 
         private void Application_Exit(object sender, ExitEventArgs e)
         {
+            c.Stop();
             SingleInstance.Close();
         }
 

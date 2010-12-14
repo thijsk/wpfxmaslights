@@ -106,5 +106,17 @@ namespace xmaslights.Properties {
                 this["BurninPrevention"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool BlinkOnBeat {
+            get {
+                return ((bool)(this["BlinkOnBeat"]));
+            }
+            set {
+                this["BlinkOnBeat"] = value;
+            }
+        }
     }
 }

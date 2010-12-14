@@ -10,6 +10,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Diagnostics;
+using Un4seen.Bass;
 
 namespace xmaslights
 {
@@ -28,14 +30,18 @@ namespace xmaslights
             this.Close();
         }
 
-        private void button2_Click(object sender, RoutedEventArgs e)
+        void link_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
         {
-            System.Diagnostics.Process.Start("http://www.brokenwire.net/");   
+            if (e.Uri.AbsoluteUri == "about:bass")
+            {
+                BeatDetector.ShowAbout();
+            }
+            else
+            {
+                Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
+            }
+            e.Handled = true;
         }
 
-        private void button3_Click(object sender, RoutedEventArgs e)
-        {
-            System.Diagnostics.Process.Start("http://www.codeplex.com/wpfxmaslights/");
-        }
     }
 }

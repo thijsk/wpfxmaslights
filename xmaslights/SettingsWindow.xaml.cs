@@ -33,21 +33,14 @@ namespace xmaslights
         private void closeButton_Click(object sender, RoutedEventArgs e)
         {
             Settings.Default.Save();
-            this.Visibility = Visibility.Collapsed;
+            this.Close();
         }
 
-        private void button1_Click(object sender, RoutedEventArgs e)
+        private void cancelButton_Click(object sender, RoutedEventArgs e)
         {
             Settings.Default.Reload();
-            this.Visibility = Visibility.Collapsed;
+            this.Close();
         }
-
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            e.Cancel = true;
-            this.Visibility = Visibility.Collapsed;
-        }
-
         
     }
 }
