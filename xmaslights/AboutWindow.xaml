@@ -8,26 +8,23 @@
             <ColumnDefinition Width="291*" />
             <ColumnDefinition Width="187*" />
         </Grid.ColumnDefinitions>
-        <Button Height="23" Margin="189,0,12,12" Name="button1" VerticalAlignment="Bottom" Click="button1_Click">Close</Button>
+        <Button Height="23" Margin="85,0,12,12" Name="button1" VerticalAlignment="Bottom" Click="button1_Click" HorizontalAlignment="Stretch" Grid.Column="1">Close</Button>
         <TextBox Margin="12,12,12,0" Name="textBox1" TextWrapping="WrapWithOverflow" Height="88" VerticalAlignment="Top">WPF Christmas Lights is an application written by Thijs Kroesbergen and is published under the GPL license. For the complete source code and more information visit the Codeplex page.</TextBox>
-        <Image Margin="0,0,12,140" Name="image1" Stretch="None" Source="/ChristmasLights;component/Resources/Candy-Cane.png" HorizontalAlignment="Right" Width="165" Grid.Column="1" />
+        <Image Margin="0,0,12,140" Name="image1" Stretch="None" Source="/ChristmasLights;component/Resources/Candy-Cane.png" HorizontalAlignment="Center" Grid.Column="1" VerticalAlignment="Center" />
         <TextBlock Margin="16,106,12,37">
             Thijs Kroesbergen / Brokenwire.Net
             <LineBreak/>
-            <Hyperlink NavigateUri="http://www.brokenwire.net/">www.brokenwire.net</Hyperlink>
+            <Hyperlink RequestNavigate="link_RequestNavigate" NavigateUri="http://www.brokenwire.net/">www.brokenwire.net</Hyperlink>
+            <LineBreak/>
             <LineBreak/>
             Source Code available on Codeplex
             <LineBreak/>
-            <Hyperlink NavigateUri="http://wpfxmaslights.codeplex.com/">wpfxmaslights.codeplex.com</Hyperlink>
+            <Hyperlink RequestNavigate="link_RequestNavigate" NavigateUri="http://wpfxmaslights.codeplex.com/">wpfxmaslights.codeplex.com</Hyperlink>
             <LineBreak/>
             <LineBreak/>
-            Icons by Iconka
+            Icons by Iconka <Hyperlink RequestNavigate="link_RequestNavigate" NavigateUri="http://iconka.com/">http://iconka.com/</Hyperlink>
             <LineBreak/>
-            <Hyperlink NavigateUri="http://iconka.com/">http://iconka.com/</Hyperlink>
-            <LineBreak/>
-            BASS.NET - the .Net Audio Library for BASS
-            <LineBreak/>
-            <Hyperlink NavigateUri="http://www.un4seen.com/">http://www.un4seen.com/</Hyperlink>
+            <Hyperlink RequestNavigate="link_RequestNavigate" NavigateUri="about:bass">BASS.NET</Hyperlink> - the .Net Audio Library for BASS
         </TextBlock>
     </Grid>
 </Window>

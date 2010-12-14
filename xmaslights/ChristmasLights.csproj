@@ -16,8 +16,7 @@
     <WarningLevel>4</WarningLevel>
     <StartupObject>xmaslights.App</StartupObject>
     <IsWebBootstrapper>true</IsWebBootstrapper>
-    <ApplicationIcon>
-    </ApplicationIcon>
+    <ApplicationIcon>Resources\Tree.ico</ApplicationIcon>
     <ManifestCertificateThumbprint>FCEA89DB568A12033978DD6C0A4918C906F47A2B</ManifestCertificateThumbprint>
     <ManifestKeyFile>brokenwire.pfx</ManifestKeyFile>
     <GenerateManifests>true</GenerateManifests>
@@ -243,6 +242,10 @@
     <Resource Include="Resources\LightBrokenSmall.png" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="basswasapi.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Webpages\snowstorm.js" />
     <Resource Include="Resources\Wreath.ico" />
     <None Include="Resources\Tree.ico" />
     <None Include="ExceptionReporter\ExceptionReporter.WinForms.dll" />
@@ -263,9 +266,7 @@
     <Resource Include="Resources\LightRedSmall.png" />
     <Resource Include="Resources\LightYellowSmall.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Bass\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
