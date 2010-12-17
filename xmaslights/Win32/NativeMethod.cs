@@ -72,7 +72,7 @@ internal class NativeMethod
     /// If the function succeeds, the return value is the handle to the hook 
     /// procedure. If the function fails, the return value is 0.
     /// </returns>
-    [DllImport("user32.dll", CharSet = CharSet.Auto)]
+    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
     public static extern IntPtr SetWindowsHookEx(HookType hookType,
         HookProc callback, IntPtr hMod, uint dwThreadId);
 
@@ -85,7 +85,7 @@ internal class NativeMethod
     /// If the function succeeds, the return value is true.
     /// If the function fails, the return value is false.
     /// </returns>
-    [DllImport("user32.dll", CharSet = CharSet.Auto)]
+    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
     public static extern bool UnhookWindowsHookEx(IntPtr hhk);
 
     /// <summary>
@@ -106,10 +106,9 @@ internal class NativeMethod
     /// <returns>
     /// This value is returned by the next hook procedure in the chain.
     /// </returns>
-    [DllImport("user32.dll", CharSet = CharSet.Auto)]
-    public static extern int CallNextHookEx(IntPtr hhk, int nCode,
-        IntPtr wParam, IntPtr lParam);
+    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+    public static extern int CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
 
-    [DllImport("kernel32", CharSet = CharSet.Auto)]
+    [DllImport("kernel32", CharSet = CharSet.Auto, SetLastError = true)]
     public static extern bool SetProcessWorkingSetSize(IntPtr handle, int minSize, int maxSize);
 }

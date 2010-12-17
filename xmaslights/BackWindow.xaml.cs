@@ -76,7 +76,10 @@ namespace xmaslights
         {
  	        base.OnSourceInitialized(e);
             // Get this window's handle
-            SetWindowStyle(new WindowInteropHelper(this).Handle, WS_EX_NOACTIVATE | WS_EX_TRANSPARENT);
+            var wih = new WindowInteropHelper(this);
+            HwndSource source = HwndSource.FromHwnd(wih.Handle);
+            source.CompositionTarget.BackgroundColor = Colors.Transparent;
+            SetWindowStyle(wih.Handle, WS_EX_NOACTIVATE | WS_EX_TRANSPARENT);
         }
 
         private void SetWindowStyle(IntPtr hwnd, int flags)
@@ -89,6 +92,7 @@ namespace xmaslights
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             WindowState = WindowState.Maximized;
+            this.Topmost = true;
         }
 
     }

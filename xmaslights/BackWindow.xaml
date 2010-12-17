@@ -2,6 +2,6 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="ChristmasLights" Topmost="True" ResizeMode="NoResize" ShowInTaskbar="False" IsHitTestVisible="True" Focusable="False" AllowsTransparency="True" WindowStyle="None" Background="Transparent"
-    Icon="/ChristmasLights;component/Resources/Wreath.ico">
+    Icon="/ChristmasLights;component/Resources/Wreath.ico" SnapsToDevicePixels="True">
     <Canvas Name="lightsCanvas" IsHitTestVisible="True" Focusable="False"></Canvas>
 </Window>

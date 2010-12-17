@@ -9,6 +9,7 @@ using System.Threading;
 using System.Windows.Input;
 using System.Diagnostics;
 using System.Windows.Threading;
+using System.Threading.Tasks;
 
 namespace xmaslights
 {
@@ -35,14 +36,21 @@ namespace xmaslights
 		{
 			Thread backgroundThread = new Thread(() =>
 			{
-				Dispatcher threadDispatcher = Dispatcher.CurrentDispatcher;
-				saveDispatcher(threadDispatcher);
-				threadDispatcher.BeginInvoke(new Action(() =>
-				{
-					set();
-				}));
-				Dispatcher.Run();
-				remove();
+                try
+                {
+                    Dispatcher threadDispatcher = Dispatcher.CurrentDispatcher;
+                    saveDispatcher(threadDispatcher);
+                    threadDispatcher.BeginInvoke(new Action(() =>
+                    {
+                        set();
+                    }));
+                    Dispatcher.Run();
+                    remove();
+                }
+                catch (Exception e)
+                {
+                    App.ReportException(e);
+                }
 			});
 			backgroundThread.IsBackground = true;
 			backgroundThread.SetApartmentState(ApartmentState.STA);
@@ -87,7 +95,7 @@ namespace xmaslights
 				HookType.WH_MOUSE_LL,  // Must be LL for the global hook
 				globalLLMouseHookCallback,
 				// Get the handle of the current module
-				Marshal.GetHINSTANCE(Assembly.GetExecutingAssembly().GetModules()[0]),
+				IntPtr.Zero,
 				// The hook procedure is associated with all existing threads running 
 				// in the same desktop as the calling thread.
 				0);
@@ -97,7 +105,8 @@ namespace xmaslights
 				using (Process curProcess = Process.GetCurrentProcess())
 				using (ProcessModule curModule = curProcess.MainModule)
 				{
-					hGlobalLLMouseHook = NativeMethod.SetWindowsHookEx(HookType.WH_MOUSE_LL, globalLLMouseHookCallback, NativeMethod.GetModuleHandle(curModule.ModuleName), 0);
+                    /*NativeMethod.GetModuleHandle(curModule.ModuleName)*/
+					hGlobalLLMouseHook = NativeMethod.SetWindowsHookEx(HookType.WH_MOUSE_LL, globalLLMouseHookCallback, IntPtr.Zero , 0);
 				}
 			}
 
@@ -163,24 +172,25 @@ namespace xmaslights
 		/// <see cref="http://msdn.microsoft.com/en-us/library/ms644986.aspx"/>
 		public int LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam)
 		{
-			if (nCode >= 0)
-			{
-				// Marshal the MSLLHOOKSTRUCT data from the callback lParam
-				MSLLHOOKSTRUCT mouseLLHookStruct = (MSLLHOOKSTRUCT)
-					Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT));
+            if (nCode >= 0)
+            {
+                // Marshal the MSLLHOOKSTRUCT data from the callback lParam
+                MSLLHOOKSTRUCT mouseLLHookStruct = (MSLLHOOKSTRUCT)
+                    Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT));
 
-				// Get the mouse WM from the wParam parameter
-				MouseMessage wmMouse = (MouseMessage)wParam;
+                // Get the mouse WM from the wParam parameter
+                MouseMessage wmMouse = (MouseMessage)wParam;
 
-				if (wmMouse == MouseMessage.WM_LBUTTONUP)
-				{
-					MouseUpEvent mouseUp = OnMouseUp;
-					if (mouseUp != null)
-					{
-						ThreadPool.QueueUserWorkItem((o) => mouseUp(new Point(mouseLLHookStruct.pt.x, mouseLLHookStruct.pt.y)));
-					}
-				}
-			}
+                if (wmMouse == MouseMessage.WM_LBUTTONUP)
+                {
+                    MouseUpEvent mouseUp = OnMouseUp;
+                    if (mouseUp != null)
+                    {
+                        Task.Factory.StartNew(delegate() { mouseUp(new Point(mouseLLHookStruct.pt.x, mouseLLHookStruct.pt.y)); });
+                        //ThreadPool.QueueUserWorkItem((o) => mouseUp(new Point(mouseLLHookStruct.pt.x, mouseLLHookStruct.pt.y)));
+                    }
+                }
+            }
 
 			// Pass the hook information to the next hook procedure in chain
 			return NativeMethod.CallNextHookEx(hGlobalLLMouseHook, nCode, wParam, lParam);
@@ -204,7 +214,7 @@ namespace xmaslights
 				HookType.WH_KEYBOARD_LL,  // Must be LL for the global hook
 				globalLLKeyboardHookCallback,
 				// Get the handle of the current module
-				Marshal.GetHINSTANCE(Assembly.GetExecutingAssembly().GetModules()[0]),
+				IntPtr.Zero,
 				// The hook procedure is associated with all existing threads running 
 				// in the same desktop as the calling thread.
 				0);
@@ -214,7 +224,7 @@ namespace xmaslights
 				using (Process curProcess = Process.GetCurrentProcess())
 				using (ProcessModule curModule = curProcess.MainModule)
 				{
-					hGlobalLLKeyboardHook = NativeMethod.SetWindowsHookEx(HookType.WH_KEYBOARD_LL, globalLLKeyboardHookCallback, NativeMethod.GetModuleHandle(curModule.ModuleName), 0);
+					hGlobalLLKeyboardHook = NativeMethod.SetWindowsHookEx(HookType.WH_KEYBOARD_LL, globalLLKeyboardHookCallback, IntPtr.Zero, 0);
 				}
 			}
 
@@ -264,28 +274,27 @@ namespace xmaslights
 		/// <see cref="http://msdn.microsoft.com/en-us/library/ms644985.aspx"/>
 		public int LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam)
 		{
-			if (nCode >= 0)
-			{
-				// Marshal the KeyboardHookStruct data from the callback lParam
-				KBDLLHOOKSTRUCT keyboardLLHookStruct = (KBDLLHOOKSTRUCT)
-					Marshal.PtrToStructure(lParam, typeof(KBDLLHOOKSTRUCT));
+            if (nCode >= 0)
+            {
+                // Marshal the KeyboardHookStruct data from the callback lParam
+                KBDLLHOOKSTRUCT keyboardLLHookStruct = (KBDLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(KBDLLHOOKSTRUCT));
 
-				// Get the virtual key code from KBDLLHOOKSTRUCT.vkCode
-				// http://msdn.microsoft.com/en-us/library/dd375731.aspx
-				Key vkCode = (Key)keyboardLLHookStruct.vkCode;
+                // Get the virtual key code from KBDLLHOOKSTRUCT.vkCode
+                // http://msdn.microsoft.com/en-us/library/dd375731.aspx
+                Key vkCode = (Key)keyboardLLHookStruct.vkCode;
 
-				// Get the keyboard WM from the wParam parameter
-				KeyboardMessage wmKeyboard = (KeyboardMessage)wParam;
+                // Get the keyboard WM from the wParam parameter
+                KeyboardMessage wmKeyboard = (KeyboardMessage)wParam;
 
-				if (wmKeyboard == KeyboardMessage.WM_KEYUP)
-				{
-					KeyUpEvent keyUp = OnKeyUp;
-					if (keyUp != null)
-					{
-						ThreadPool.QueueUserWorkItem((o) => keyUp());
-					}
-				}
-			}
+                if (wmKeyboard == KeyboardMessage.WM_KEYUP)
+                {
+                    KeyUpEvent keyUp = OnKeyUp;
+                    if (keyUp != null)
+                    {
+                        Task.Factory.StartNew(delegate() { keyUp(); });
+                    }
+                }
+            }
 
 			// Pass the hook information to the next hook procedure in chain
 			return NativeMethod.CallNextHookEx(hGlobalLLKeyboardHook, nCode, wParam, lParam);

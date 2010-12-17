@@ -1,0 +1,11 @@
+﻿<UserControl
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
+    x:Class="xmaslights.ShaderLight"
+    Height="40" Width="20" d:DesignHeight="40" d:DesignWidth="20" Focusable="False" SnapsToDevicePixels="True" >
+    <Canvas>
+        <Image Margin="0,0,0,0" Name="lightImage" Stretch="Fill" Source="/ChristmasLights;component/Resources/LightYellowSmall.png" Focusable="False"/>
+        <Image Margin="0,0,0,0" Name="socketImage" Stretch="Fill" Source="/ChristmasLights;component/Resources/LightSocket.png" Focusable="False"/>
+    </Canvas>
+</UserControl>

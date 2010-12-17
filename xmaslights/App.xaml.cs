@@ -22,6 +22,7 @@ namespace xmaslights
         {
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
             c = new Controller();
+            AppDomain.CurrentDomain.FirstChanceException += new EventHandler<System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs>(CurrentDomain_FirstChanceException);
         }
 
         ~App()
@@ -60,18 +61,25 @@ namespace xmaslights
                     {
                         w.Close();
                     }
-
-                    Exception exception = e.Exception;
-                    ExceptionReporting.Core.ExceptionReporter reporter = new ExceptionReporting.Core.ExceptionReporter();
-                    reporter.Config.ShowFullDetail = false;
-                    reporter.Config.EmailReportAddress = "ChristmasLightsSupport@brokenwire.net";
-                    reporter.Config.WebUrl = "http://www.brokenwire.net/";
-                    reporter.Show(exception);
-                    
-                    this.Shutdown(1);
+                    ReportException(e.Exception);
+                    e.Handled = true;
                 }
-                e.Handled = true;
+                this.Shutdown(1);
             }
+        }
+
+        internal static void ReportException(Exception e)
+        {
+                ExceptionReporting.Core.ExceptionReporter reporter = new ExceptionReporting.Core.ExceptionReporter();
+                reporter.Config.ShowFullDetail = false;
+                reporter.Config.EmailReportAddress = "ChristmasLightsSupport@brokenwire.net";
+                reporter.Config.WebUrl = "http://www.brokenwire.net/";
+                reporter.Show(e);
+        }
+
+        void CurrentDomain_FirstChanceException(object sender, System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs e)
+        {
+            ReportException(e.Exception);
         }
 
         private void CreateMainWindow()
