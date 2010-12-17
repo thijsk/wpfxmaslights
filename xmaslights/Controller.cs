@@ -34,9 +34,11 @@ namespace xmaslights
         private bool _timerEnabled;
         private bool _hooksEnabled;
         private bool _beatDetectEnabled;
+        private int _audioDevice;
+        private double _lightHueShift;
 
         private bool _tickEnabled;
-
+        
         public Controller()
         {
             _dispatcher = Dispatcher.CurrentDispatcher;
@@ -51,7 +53,8 @@ namespace xmaslights
 
         ~Controller()
         {
-            
+            Settings.Default.SettingChanging -= new System.Configuration.SettingChangingEventHandler(Default_SettingChanging);
+            Settings.Default.SettingsLoaded -= new System.Configuration.SettingsLoadedEventHandler(Default_SettingsLoaded);
             SystemEvents.DisplaySettingsChanged -= new EventHandler(SystemEvents_DisplaySettingsChanged);
             SystemEvents.DisplaySettingsChanging -= new EventHandler(SystemEvents_DisplaySettingsChanging);
             SystemEvents.SessionSwitch -= new SessionSwitchEventHandler(SystemEvents_SessionSwitch);
@@ -87,6 +90,8 @@ namespace xmaslights
             _timerEnabled = Settings.Default.TimerEnabled;
             _hooksEnabled = Settings.Default.BlinkAsYouType;
             _beatDetectEnabled = Settings.Default.BlinkOnBeat;
+            _audioDevice = Settings.Default.AudioDevice;
+            _lightHueShift = Settings.Default.LightHueShift;
         }
 
         public void Stop()
@@ -170,12 +175,14 @@ namespace xmaslights
         {
             if (_beatDetectEnabled)
             {
-                if (_beatDetector == null)
+                if (_beatDetector != null)
                 {
-                    _beatDetector = new BeatDetector();
-                    _beatDetector.OnBeat += new Action(delegate { _dispatcher.BeginInvoke(new Action(_beatDetector_OnBeat), DispatcherPriority.SystemIdle, null); });
+                    _beatDetector.Stop();
+                    _beatDetector = null;
                 }
-                _beatDetector.Start();
+                _beatDetector = new BeatDetector();
+                _beatDetector.OnBeat += new Action(delegate { _dispatcher.BeginInvoke(new Action(_beatDetector_OnBeat), DispatcherPriority.SystemIdle, null); });
+                _beatDetector.Start(_audioDevice);
             }
             else
             {
@@ -311,6 +318,22 @@ namespace xmaslights
                     _beatDetectEnabled = (bool)e.NewValue;
                     StartStopBeatDetect();
                     break;
+                case "AudioDevice":
+                    _audioDevice = (int)e.NewValue;
+                    StartStopBeatDetect();
+                    break;
+                case "LightHueShift":
+                    _lightHueShift = (double)e.NewValue;
+                    foreach (var w in this._windows)
+                    {
+                        foreach (var l in w.Lights)
+                        {
+                            ShaderLight sl = l as ShaderLight;
+                            if (sl != null)
+                                sl.HueShift = _lightHueShift;
+                        }
+                    }
+                    break;
             }
             _tickEnabled = true;
         }
@@ -445,7 +468,9 @@ namespace xmaslights
 
         private ILight CreateLight()
         {
-            BitmapLight l = new BitmapLight();
+            //BitmapLight l = new BitmapLight();
+            ShaderLight l = new ShaderLight();
+            l.HueShift = _lightHueShift;
             RenderOptions.SetBitmapScalingMode(l, BitmapScalingMode.LowQuality);
             RenderOptions.SetEdgeMode(l, EdgeMode.Aliased);
             return l;
@@ -467,6 +492,8 @@ namespace xmaslights
 
         private void Tick()
         {
+            Debug.Write("Tick-");
+            Debug.WriteLine(System.Threading.Thread.CurrentThread.ManagedThreadId);
             if (_tickEnabled)
             {
                 if (this._dispatcher.Thread != Thread.CurrentThread)
@@ -480,6 +507,7 @@ namespace xmaslights
                     {
                         PopulateWindows(false);
                     }
+
                     switch (Settings.Default.BlinkPattern)
                     {
                         case BlinkPattern.Walking:
@@ -538,7 +566,6 @@ namespace xmaslights
         private int FindLight(BackWindow w, int offset, int step)
         {
             int found = (((w.CurrentLight + offset) + step) + w.LightsCount) % w.LightsCount;
-            Debug.WriteLine(found);
             return found;
         }
 
@@ -590,7 +617,7 @@ namespace xmaslights
             {
                 for (int repeat = 0; repeat < (w.LightsCount / 10); repeat++)
                 {
-                    w.Lights[_rnd.Next(w.LightsCount - 1)].Switch();
+                    w.Lights[_rnd.Next(w.LightsCount)].Switch();
                 }
             }
         }
@@ -636,7 +663,7 @@ namespace xmaslights
      
         private void MouseClick(Point point)
         {
-            Debug.Write("Click");
+            Debug.Write("Click-");
             Debug.WriteLine(System.Threading.Thread.CurrentThread.ManagedThreadId);
             foreach (var window in this._windows)
             {
@@ -654,7 +681,7 @@ namespace xmaslights
                 }
                 catch (Exception e)
                 {
-                    Debug.WriteLine(e);
+                    App.ReportException(e);
                 }
             }
         }
@@ -662,7 +689,7 @@ namespace xmaslights
 
         private void _beatDetector_OnBeat()
         {
-            Debug.Write("Beat");
+            Debug.Write("Beat-");
             Debug.WriteLine(System.Threading.Thread.CurrentThread.ManagedThreadId);
             Tick();
         }

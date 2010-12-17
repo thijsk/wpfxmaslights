@@ -35,7 +35,7 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <OldToolsVersion>3.5</OldToolsVersion>
-    <PublishUrl>Z:\xmaslights\publish\</PublishUrl>
+    <PublishUrl>Z:\xmaslights\publishbw\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
     <UpdateEnabled>true</UpdateEnabled>
@@ -45,14 +45,14 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <InstallUrl>http://wpfxmaslights.codeplex.com/releases/clickonce/</InstallUrl>
+    <InstallUrl>http://www.brokenwire.net/ChristmasLights/</InstallUrl>
     <SupportUrl>http://www.brokenwire.net/</SupportUrl>
     <ProductName>ChristmasLights</ProductName>
     <PublisherName>Brokenwire.NET</PublisherName>
     <WebPage>publish.htm</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
-    <ApplicationRevision>29</ApplicationRevision>
-    <ApplicationVersion>1.0.0.29</ApplicationVersion>
+    <ApplicationRevision>30</ApplicationRevision>
+    <ApplicationVersion>1.0.0.30</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -122,7 +122,11 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="BeatDetector.cs" />
+    <Compile Include="ShaderLight.xaml.cs">
+      <DependentUpon>ShaderLight.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Hooks.cs" />
+    <Compile Include="ShiftHue\ShiftHueEffect.cs" />
     <Compile Include="SingleInstance.cs" />
     <Compile Include="Win32\HookNative.cs" />
     <Compile Include="Win32\NativeMethod.cs" />
@@ -163,6 +167,8 @@
     </EmbeddedResource>
     <None Include="app.config" />
     <None Include="brokenwire.pfx" />
+    <None Include="ShiftHue\ShiftHue.fx" />
+    <Resource Include="ShiftHue\ShiftHue.ps" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -186,6 +192,10 @@
     <Page Include="BitmapLight.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ShaderLight.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -245,6 +255,7 @@
     <Content Include="basswasapi.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Resources\LightSocket.png" />
     <Content Include="Webpages\snowstorm.js" />
     <Resource Include="Resources\Wreath.ico" />
     <None Include="Resources\Tree.ico" />

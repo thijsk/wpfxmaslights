@@ -118,5 +118,29 @@ namespace xmaslights.Properties {
                 this["BlinkOnBeat"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
+        public int AudioDevice {
+            get {
+                return ((int)(this["AudioDevice"]));
+            }
+            set {
+                this["AudioDevice"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double LightHueShift {
+            get {
+                return ((double)(this["LightHueShift"]));
+            }
+            set {
+                this["LightHueShift"] = value;
+            }
+        }
     }
 }
