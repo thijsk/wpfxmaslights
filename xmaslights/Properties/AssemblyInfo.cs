@@ -1,6 +1,4 @@
 ﻿using System.Reflection;
-using System.Resources;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows;
 
@@ -12,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Brokenwire.NET")]
 [assembly: AssemblyProduct("ChristmasLights")]
-[assembly: AssemblyCopyright("Copyright © Thijs Kroesbergen 2008")]
+[assembly: AssemblyCopyright("Copyright © Thijs Kroesbergen 2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

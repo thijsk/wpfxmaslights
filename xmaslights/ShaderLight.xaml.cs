@@ -1,21 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Runtime.InteropServices;
-using System.Windows.Interop;
-using System.Windows.Media.Animation;
-using System.Windows.Media.Effects;
-using System.ComponentModel;
 using System.Windows.Threading;
 using HueShift;
 
@@ -24,7 +9,7 @@ namespace xmaslights
     /// <summary>
     /// Interaction logic for ShaderLight.xaml
     /// </summary>
-    public partial class ShaderLight : UserControl, ILight
+    public partial class ShaderLight : ILight
     {
         private static BitmapImage lightOff;
         private static BitmapImage lightOn;
@@ -49,7 +34,7 @@ namespace xmaslights
             player = new MediaPlayer();
             player.Volume = 1;
             player.Open(new Uri(@"Resources\glass_break_1.mp3", UriKind.Relative));
-            player.MediaEnded += new EventHandler(delegate(object o, EventArgs e) { player.Stop(); });
+            player.MediaEnded += delegate { player.Stop(); };
             player.Stop();
 
         }
@@ -68,8 +53,7 @@ namespace xmaslights
         private int _lifetime;
         private bool _isBroken;
         private DispatcherTimer _repairtimer;
-        private double _lightHueShift;
-       
+
         public void Switch()
         {
             _isOn = !_isOn;
@@ -102,20 +86,20 @@ namespace xmaslights
 
                 if (_isOn)
                 {
-                    this.lightImage.Source = lightOn;
-                    ((ShiftHueEffect)this.lightImage.Effect).HueShift = HueShift;
+                    lightImage.Source = lightOn;
+                    ((ShiftHueEffect)lightImage.Effect).HueShift = HueShift;
                 }
                 else
                 {
-                    this.lightImage.Source = lightOff;
-                    ((ShiftHueEffect)this.lightImage.Effect).HueShift = HueShift;
+                    lightImage.Source = lightOff;
+                    ((ShiftHueEffect)lightImage.Effect).HueShift = HueShift;
                 }
             }
         }
 
         public void Rotate(int angle)
         {
-            this.RenderTransform = new RotateTransform(angle, 10, 20);
+            RenderTransform = new RotateTransform(angle, 10, 20);
         }
 
         public bool IsOn()
@@ -125,7 +109,7 @@ namespace xmaslights
 
         public void Click()
         {
-            if (!_isBroken && ++_clickCounter == 4)
+            if (!_isBroken && ++_clickCounter == 3)
             {
                 Break();
             }
@@ -135,9 +119,9 @@ namespace xmaslights
         {
             player.Play();
             _isBroken = true;
-            _repairtimer = new DispatcherTimer(new TimeSpan(0,0,20), DispatcherPriority.ApplicationIdle, new EventHandler(delegate(object o, EventArgs e) { Repair(); }), Dispatcher.CurrentDispatcher);
+            _repairtimer = new DispatcherTimer(new TimeSpan(0,0,20), DispatcherPriority.ApplicationIdle, delegate { Repair(); }, Dispatcher.CurrentDispatcher);
             _repairtimer.Start();
-            this.lightImage.Source = lightBroken;
+            lightImage.Source = lightBroken;
         }
 
         private void Repair()
@@ -153,8 +137,8 @@ namespace xmaslights
             _blinkCounter = 0;
             _lifetime = random.Next(3600, 10800);
             ShiftHueEffect effect = new ShiftHueEffect();
-            this.lightImage.Effect = (Effect)effect;
-            this.lightImage.Source = lightOn;
+            lightImage.Effect = effect;
+            lightImage.Source = lightOn;
         }
     }
 }

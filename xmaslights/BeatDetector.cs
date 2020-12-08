@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Un4seen.Bass;
 using Un4seen.Bass.AddOn.Fx;
 using Un4seen.BassWasapi;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Threading;
 
 namespace xmaslights
@@ -20,9 +18,10 @@ namespace xmaslights
         private BPMBEATPROC _bpmBeatProc;
         private RECORDPROC _recordProc;
         private BassWasapiHandler _wasapi;
-        private static List<AudioDevice> _devices = InitAudiodeviceList();
         private Dispatcher _threadDispatcher;
-      
+
+        private List<AudioDevice> _devices;
+
         static BeatDetector()
         {
             byte[] hex = { 0x74, 0x68, 0x69, 0x6A, 0x73, 0x40, 0x62, 0x72, 0x6F, 0x6B, 0x65, 0x6E, 0x77, 0x69, 0x72, 0x65, 0x2E, 0x6E, 0x65, 0x74, 0x2D, 0x32, 0x58, 0x31, 0x38, 0x33, 0x31, 0x32, 0x38, 0x32, 0x30, 0x31, 0x31, 0x33, 0x37, 0x31, 0x38 };
@@ -36,7 +35,7 @@ namespace xmaslights
 
         public BeatDetector()
         {
-            
+            _devices = InitAudiodeviceList();
         }
 
         private void CreateThread()
@@ -50,12 +49,12 @@ namespace xmaslights
             public string Name { get; set; }
         }
 
-        public static IEnumerable<AudioDevice> GetAudioDevices()
+        public IEnumerable<AudioDevice> GetAudioDevices()
         {
             return _devices;
         }
 
-        private static List<AudioDevice> InitAudiodeviceList()
+        private List<AudioDevice> InitAudiodeviceList()
         {
             List<AudioDevice> devices = new List<AudioDevice>();
             devices.Add(new AudioDevice() { DeviceId = -1, Name = "Autodetect" });
@@ -123,11 +122,15 @@ namespace xmaslights
                 if (BassWasapi.BASS_WASAPI_GetDeviceInfo(deviceId) == null)
                     deviceId = AutodetectWasapiDevice();
             }
-            var info = BassWasapi.BASS_WASAPI_GetDeviceInfo(deviceId);
-            _wasapi = new BassWasapiHandler(deviceId, false, info.mixfreq, info.mixchans, 0, info.minperiod);
-            _wasapi.Init();
-            _wasapi.Start();
-            _recordChan = _wasapi.InputChannel;
+
+            if (deviceId > -1)
+            {
+                var info = BassWasapi.BASS_WASAPI_GetDeviceInfo(deviceId);
+                _wasapi = new BassWasapiHandler(deviceId, false, info.mixfreq, info.mixchans, 0, info.minperiod);
+                _wasapi.Init();
+                _wasapi.Start();
+                _recordChan = _wasapi.InputChannel;
+            }
         }
 
         private static int AutodetectWasapiDevice()
@@ -135,13 +138,13 @@ namespace xmaslights
             int deviceId = 0;
             foreach (var device in BassWasapi.BASS_WASAPI_GetDeviceInfos())
             {
-                if (device.SupportsRecording && device.IsEnabled && device.name.StartsWith("Speaker"))
+                if (device.SupportsRecording && device.IsEnabled) 
                 {
-                    break;
+                    return deviceId;
                 }
                 deviceId++;
             }
-            return deviceId;
+            return -1;
         }
 
         public void Start(int deviceId)
@@ -153,8 +156,6 @@ namespace xmaslights
                     _threadDispatcher = Dispatcher.CurrentDispatcher;
                     _threadDispatcher.BeginInvoke(new Action(() =>
                         {
-                            Bass.BASS_SetConfig(BASSConfig.BASS_CONFIG_UPDATEPERIOD, 0);
-                            Bass.BASS_Init(0, 44100, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);
                             // Wasapi only works on Vista, 7 and the likes
                             if (HasWasapi)
                             {
@@ -162,6 +163,8 @@ namespace xmaslights
                             }
                             else
                             {
+                                Bass.BASS_SetConfig(BASSConfig.BASS_CONFIG_UPDATEPERIOD, 0);
+                                Bass.BASS_Init(0, 44100, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);
                                 InitBassapi(deviceId);
                             }
                             _bpmBeatProc = new BPMBEATPROC(BpmBeatProc);
@@ -178,7 +181,7 @@ namespace xmaslights
             });
             backgroundThread.IsBackground = true;
             backgroundThread.SetApartmentState(ApartmentState.STA);
-            backgroundThread.Priority = ThreadPriority.Normal;
+            backgroundThread.Priority = ThreadPriority.BelowNormal;
             backgroundThread.Start();
         }
 

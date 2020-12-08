@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
 using System.Windows;
 using System.Windows.Threading;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Threading;
 
 namespace xmaslights
 {
@@ -70,11 +64,7 @@ namespace xmaslights
 
         internal static void ReportException(Exception e)
         {
-                ExceptionReporting.Core.ExceptionReporter reporter = new ExceptionReporting.Core.ExceptionReporter();
-                reporter.Config.ShowFullDetail = false;
-                reporter.Config.EmailReportAddress = "ChristmasLightsSupport@brokenwire.net";
-                reporter.Config.WebUrl = "http://www.brokenwire.net/";
-                reporter.Show(e);
+            Debug.Write(e);
         }
 
         void CurrentDomain_FirstChanceException(object sender, System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs e)

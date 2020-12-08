@@ -2,17 +2,12 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using WinForms = System.Windows.Forms;
-using System.Runtime.InteropServices;
 using Microsoft.Win32;
-using System.Windows.Input;
-using System.Threading.Tasks;
 using System.Threading;
 using xmaslights.Properties;
 
@@ -22,12 +17,12 @@ namespace xmaslights
     {
         private readonly List<BackWindow> _windows = new List<BackWindow>();
         private int _lightSpacing;
-        private Random _rnd;
+        private readonly Random _rnd;
         private DispatcherTimer _timer;
         private DateTime _lastShuffle;
         private TimeSpan _timerInterval;
         private Hooks _hooks;
-        private Dispatcher _dispatcher;
+        private readonly Dispatcher _dispatcher;
         private WinForms.NotifyIcon _trayIcon;
         private BeatDetector _beatDetector;
 
@@ -44,20 +39,20 @@ namespace xmaslights
             _dispatcher = Dispatcher.CurrentDispatcher;
             _rnd = new Random();
            
-            Settings.Default.SettingChanging += new System.Configuration.SettingChangingEventHandler(Default_SettingChanging);
-            Settings.Default.SettingsLoaded += new System.Configuration.SettingsLoadedEventHandler(Default_SettingsLoaded);
-            SystemEvents.DisplaySettingsChanged += new EventHandler(SystemEvents_DisplaySettingsChanged);
-            SystemEvents.DisplaySettingsChanging += new EventHandler(SystemEvents_DisplaySettingsChanging);
-            SystemEvents.SessionSwitch += new SessionSwitchEventHandler(SystemEvents_SessionSwitch);
+            Settings.Default.SettingChanging += Default_SettingChanging;
+            Settings.Default.SettingsLoaded += Default_SettingsLoaded;
+            SystemEvents.DisplaySettingsChanged += SystemEvents_DisplaySettingsChanged;
+            SystemEvents.DisplaySettingsChanging += SystemEvents_DisplaySettingsChanging;
+            SystemEvents.SessionSwitch += SystemEvents_SessionSwitch;
         }
 
         ~Controller()
         {
-            Settings.Default.SettingChanging -= new System.Configuration.SettingChangingEventHandler(Default_SettingChanging);
-            Settings.Default.SettingsLoaded -= new System.Configuration.SettingsLoadedEventHandler(Default_SettingsLoaded);
-            SystemEvents.DisplaySettingsChanged -= new EventHandler(SystemEvents_DisplaySettingsChanged);
-            SystemEvents.DisplaySettingsChanging -= new EventHandler(SystemEvents_DisplaySettingsChanging);
-            SystemEvents.SessionSwitch -= new SessionSwitchEventHandler(SystemEvents_SessionSwitch);
+            Settings.Default.SettingChanging -= Default_SettingChanging;
+            Settings.Default.SettingsLoaded -= Default_SettingsLoaded;
+            SystemEvents.DisplaySettingsChanged -= SystemEvents_DisplaySettingsChanged;
+            SystemEvents.DisplaySettingsChanging -= SystemEvents_DisplaySettingsChanging;
+            SystemEvents.SessionSwitch -= SystemEvents_SessionSwitch;
 
         }
 
@@ -103,16 +98,16 @@ namespace xmaslights
 
             _tickEnabled = true;
             StartStopTickGenerators();
-            this.RemoveBackgroundWindows();
+            RemoveBackgroundWindows();
         }
 
         private void CreateTrayIcon()
         {
             _trayIcon = new WinForms.NotifyIcon();
-            _trayIcon.MouseDoubleClick += new WinForms.MouseEventHandler(this.NotifyIcon_DoubleClick);
-            _trayIcon.Icon = Properties.Resources.Tree;
+            _trayIcon.MouseDoubleClick += NotifyIcon_DoubleClick;
+            _trayIcon.Icon = Resources.Tree;
             _trayIcon.Text = "Christmas Lights";
-            _trayIcon.ContextMenuStrip = this.CreateContextMenu();
+            _trayIcon.ContextMenuStrip = CreateContextMenu();
             _trayIcon.Visible = true;
         }
 
@@ -128,14 +123,14 @@ namespace xmaslights
 
         private WinForms.ContextMenuStrip CreateContextMenu()
         {
-            WinForms.ContextMenuStrip menu = new WinForms.ContextMenuStrip();
-            WinForms.ToolStripSeparator mnuSeparator = new WinForms.ToolStripSeparator();
-            WinForms.ToolStripMenuItem mnuSettings = new WinForms.ToolStripMenuItem("Settings...");
-            WinForms.ToolStripMenuItem mnuAbout = new WinForms.ToolStripMenuItem("About...");
-            WinForms.ToolStripMenuItem mnuExit = new WinForms.ToolStripMenuItem("Exit");
-            mnuExit.Click += this.Exit_Click;
-            mnuAbout.Click += this.About_Click;
-            mnuSettings.Click += this.Settings_Click;
+            var menu = new WinForms.ContextMenuStrip();
+            var mnuSeparator = new WinForms.ToolStripSeparator();
+            var mnuSettings = new WinForms.ToolStripMenuItem("Settings...");
+            var mnuAbout = new WinForms.ToolStripMenuItem("About...");
+            var mnuExit = new WinForms.ToolStripMenuItem("Exit");
+            mnuExit.Click += Exit_Click;
+            mnuAbout.Click += About_Click;
+            mnuSettings.Click += Settings_Click;
             menu.Items.Add(mnuSettings);
             menu.Items.Add(mnuAbout);
             menu.Items.Add(mnuSeparator);
@@ -147,7 +142,7 @@ namespace xmaslights
         {
             if (e.Button == WinForms.MouseButtons.Left)
             {
-                this.Settings_Click(null, null);
+                Settings_Click(null, null);
             }
         }
 
@@ -155,7 +150,7 @@ namespace xmaslights
         {
             _trayIcon.Visible = false;
             RemoveBackgroundWindows();
-            Application.Current.MainWindow.Close();
+            if (Application.Current.MainWindow != null) Application.Current.MainWindow.Close();
             Application.Current.Shutdown();
         }
 
@@ -166,7 +161,7 @@ namespace xmaslights
 
         private void About_Click(object sender, EventArgs e)
         {
-            AboutWindow about = new AboutWindow();
+            var about = new AboutWindow();
             about.Owner = Application.Current.MainWindow;
             about.ShowDialog();
         }
@@ -181,7 +176,7 @@ namespace xmaslights
                     _beatDetector = null;
                 }
                 _beatDetector = new BeatDetector();
-                _beatDetector.OnBeat += new Action(delegate { _dispatcher.BeginInvoke(new Action(_beatDetector_OnBeat), DispatcherPriority.SystemIdle, null); });
+                _beatDetector.OnBeat += delegate { _dispatcher.BeginInvoke(new Action(_beatDetector_OnBeat), DispatcherPriority.SystemIdle, null); };
                 _beatDetector.Start(_audioDevice);
             }
             else
@@ -203,7 +198,7 @@ namespace xmaslights
                     _timer = new DispatcherTimer();
                     _timerInterval = new TimeSpan(0, 0, 0, 0, Settings.Default.Speed);
                     _timer.Interval = _timerInterval;
-                    _timer.Tick += new EventHandler(delegate(object o, EventArgs e) { Dispatcher.CurrentDispatcher.BeginInvoke(new Action(Tick), DispatcherPriority.SystemIdle); });
+                    _timer.Tick += delegate(object o, EventArgs e) { Dispatcher.CurrentDispatcher.BeginInvoke(new Action(Tick), DispatcherPriority.SystemIdle); };
                 }
                 _timer.Start();
                 _timer.IsEnabled = true;
@@ -221,32 +216,34 @@ namespace xmaslights
 
         private void StartStopHooks()
         {
-            bool mouseenabled = true;
-            bool keyenabled = this._hooksEnabled;
+            var mouseenabled = _hooksEnabled; //needed to break bulbs
+            var keyenabled = _hooksEnabled;
 
             if (_hooks == null && (mouseenabled || keyenabled))
             {
                 _hooks = new Hooks();
-                _hooks.OnKeyUp += new Hooks.KeyUpEvent(delegate { _dispatcher.BeginInvoke(new Action(KeyHit), DispatcherPriority.SystemIdle, null); });
-                _hooks.OnMouseUp += new Hooks.MouseUpEvent(delegate(Point pt) { _dispatcher.BeginInvoke(new Action<Point>(MouseClick), DispatcherPriority.SystemIdle, pt); });
+                _hooks.OnKeyUp += () =>
+                    _dispatcher.BeginInvoke(new Action(KeyHit), DispatcherPriority.SystemIdle, null);
+                _hooks.OnMouseUp += pt =>
+                    _dispatcher.BeginInvoke(new Action<Point>(MouseClick), DispatcherPriority.SystemIdle, pt);
             }
 
             if (keyenabled)
             {
-                _hooks.SetBackgroundGlobalLLKeyboardHook();
+                _hooks?.SetBackgroundGlobalLLKeyboardHook();
             }
             else
             {
-                _hooks.RemoveBackgroundGlobalLLKeyboardHook();
+                _hooks?.RemoveBackgroundGlobalLLKeyboardHook();
             }
 
             if (mouseenabled)
             {
-                _hooks.SetBackgroundGlobalLLMouseHook();
+                _hooks?.SetBackgroundGlobalLLMouseHook();
             }
             else
             {
-                _hooks.RemoveBackgroundGlobalLLMouseHook();
+                _hooks?.RemoveBackgroundGlobalLLMouseHook();
             }
         }
 
@@ -324,12 +321,11 @@ namespace xmaslights
                     break;
                 case "LightHueShift":
                     _lightHueShift = (double)e.NewValue;
-                    foreach (var w in this._windows)
+                    foreach (var w in _windows)
                     {
                         foreach (var l in w.Lights)
                         {
-                            ShaderLight sl = l as ShaderLight;
-                            if (sl != null)
+                            if (l is ShaderLight sl)
                                 sl.HueShift = _lightHueShift;
                         }
                     }
@@ -348,26 +344,28 @@ namespace xmaslights
                     AddChristmasLightsWindows();
                 }
 
-                foreach (BackWindow w in _windows)
+                foreach (var w in _windows)
                 {
                     AddLights(w);
                 }
-                ReduceWorkingSet();
                 _lastShuffle = DateTime.Now;
             }
         }
 
         private void RemoveBackgroundWindows()
         {
-            foreach (BackWindow m in _windows)
+            lock (_windows)
             {
-                m.Close();
+                foreach (var m in _windows)
+                {
+                    m.Close();
+                }
             }
         }
             
         private void CreateSettingsWindow()
         {
-            SettingsWindow settingsWindow = new SettingsWindow(this);
+            var settingsWindow = new SettingsWindow(this);
             settingsWindow.Owner = Application.Current.MainWindow;
             settingsWindow.Show();
             settingsWindow.Activate();
@@ -375,11 +373,11 @@ namespace xmaslights
 
         private void AddChristmasLightsWindows()
         {
-            int screenNumber = 0;
+            var screenNumber = 0;
 
-            foreach (WinForms.Screen s in WinForms.Screen.AllScreens)
+            foreach (var s in WinForms.Screen.AllScreens)
             {
-                BackWindow m = new BackWindow(this)
+                var m = new BackWindow(this)
                 {
                     WindowStartupLocation = WindowStartupLocation.Manual,
                     Left = s.Bounds.Left,
@@ -407,20 +405,20 @@ namespace xmaslights
             m.lightsCanvas.Children.Clear();
             ILight l;
 
-            List<ILight> leftSide = new List<ILight>();
-            List<ILight> rightSide = new List<ILight>();
-            List<ILight> topLeftSide = new List<ILight>();
-            List<ILight> topRightSide = new List<ILight>();
+            var leftSide = new List<ILight>();
+            var rightSide = new List<ILight>();
+            var topLeftSide = new List<ILight>();
+            var topRightSide = new List<ILight>();
 
-            int lightSpacing = _lightSpacing;
-            int offset = 0;
+            var lightSpacing = _lightSpacing;
+            var offset = 0;
 
-            if (Properties.Settings.Default.BurninPrevention)
+            if (Settings.Default.BurninPrevention)
             {
                 offset = _rnd.Next(-1 * (lightSpacing / 4), (_lightSpacing / 4));
             }
 
-            for (int x = (lightSpacing / 2); x < (m.Screen.WorkingArea.Height - (lightSpacing / 2)); x += lightSpacing)
+            for (var x = (lightSpacing / 2); x < (m.Screen.WorkingArea.Height - (lightSpacing / 2)); x += lightSpacing)
             {
                 l = CreateLight();
                 l.Rotate(90 + RandomAngle());
@@ -439,7 +437,7 @@ namespace xmaslights
                 m.lightsCanvas.Children.Add((UIElement)l);
             }
             
-            for (int y = (lightSpacing / 2) + (m.Screen.WorkingArea.Width / 2); y < (m.Screen.WorkingArea.Width - (lightSpacing / 2)); y += lightSpacing)
+            for (var y = (lightSpacing / 2) + (m.Screen.WorkingArea.Width / 2); y < (m.Screen.WorkingArea.Width - (lightSpacing / 2)); y += lightSpacing)
             {
                 l = CreateLight();
                 l.Rotate(180 + RandomAngle());
@@ -468,35 +466,35 @@ namespace xmaslights
 
         private ILight CreateLight()
         {
-            //BitmapLight l = new BitmapLight();
-            ShaderLight l = new ShaderLight();
+            var l = new ShaderLight();
             l.HueShift = _lightHueShift;
             RenderOptions.SetBitmapScalingMode(l, BitmapScalingMode.LowQuality);
             RenderOptions.SetEdgeMode(l, EdgeMode.Aliased);
+            RenderOptions.SetCachingHint(l, CachingHint.Cache);
             return l;
         }
 
         private void SetupFirstRun()
         {
-            Properties.Settings.Default.BlinkPattern = BlinkPattern.Blink;
-            Properties.Settings.Default.Speed = 1000;
-            Properties.Settings.Default.FirstRun = false;
-            Properties.Settings.Default.BurninPrevention = false;
-            Properties.Settings.Default.TimerEnabled = true;
-            Properties.Settings.Default.BlinkOnBeat = false;
-            Properties.Settings.Default.BlinkAsYouType = false;
-            Properties.Settings.Default.Save();
-            System.Diagnostics.Process.Start("http://www.brokenwire.net/ChristmasLights/thankyou.htm");
+            Settings.Default.BlinkPattern = BlinkPattern.Blink;
+            Settings.Default.Speed = 1000;
+            Settings.Default.FirstRun = false;
+            Settings.Default.BurninPrevention = false;
+            Settings.Default.TimerEnabled = true;
+            Settings.Default.BlinkOnBeat = false;
+            Settings.Default.BlinkAsYouType = false;
+            Settings.Default.Save();
+            Process.Start("http://www.brokenwire.net/ChristmasLights/thankyou.htm");
             CreateSettingsWindow();
         }
 
         private void Tick()
         {
             Debug.Write("Tick-");
-            Debug.WriteLine(System.Threading.Thread.CurrentThread.ManagedThreadId);
+            Debug.WriteLine(Thread.CurrentThread.ManagedThreadId);
             if (_tickEnabled)
             {
-                if (this._dispatcher.Thread != Thread.CurrentThread)
+                if (_dispatcher.Thread != Thread.CurrentThread)
                 {
                     _dispatcher.BeginInvoke(new Action(Tick), DispatcherPriority.SystemIdle, null);
                     return;
@@ -530,13 +528,11 @@ namespace xmaslights
             }
         }
 
-        #region Blinking Patterns
-
         private void AllOnOff()
         {
-            foreach (BackWindow w in this._windows)
+            foreach (var w in _windows)
             {
-                foreach (ILight l in w.Lights)
+                foreach (var l in w.Lights)
                 {
                     l.Switch();
                 }
@@ -545,10 +541,10 @@ namespace xmaslights
 
         private void Interlaced()
         {
-            foreach (BackWindow w in this._windows)
+            foreach (var w in _windows)
             {
-                bool skip = w.Lights[0].IsOn();
-                foreach (ILight l in w.Lights)
+                var skip = w.Lights[0].IsOn();
+                foreach (var l in w.Lights)
                 {
                     skip = !skip;
                     if (skip)
@@ -565,7 +561,7 @@ namespace xmaslights
 
         private int FindLight(BackWindow w, int offset, int step)
         {
-            int found = (((w.CurrentLight + offset) + step) + w.LightsCount) % w.LightsCount;
+            var found = (((w.CurrentLight + offset) + step) + w.LightsCount) % w.LightsCount;
             return found;
         }
 
@@ -581,7 +577,7 @@ namespace xmaslights
 
         private void Running()
         {
-            foreach (BackWindow w in this._windows)
+            foreach (var w in _windows)
             {
                 w.Lights[FindLight(w, (w.LightsCount / 3), -1)].Off();
                 w.Lights[FindLight(w, (w.LightsCount / 3), 1)].On();
@@ -598,10 +594,10 @@ namespace xmaslights
 
         private void KnightRider()
         {
-            foreach (BackWindow w in this._windows)
+            foreach (var w in _windows)
             {
-                int offset = w.LightsCount - w.CurrentLight;
-                int width = w.LightsCount / 4;
+                var offset = w.LightsCount - w.CurrentLight;
+                var width = w.LightsCount / 4;
                 w.Lights[FindLight(w, offset, offset)].Off();
                 w.Lights[FindLight(w, 0, -1)].Off();
                 w.Lights[FindLight(w, offset, offset -  (2+width))].On();
@@ -613,9 +609,9 @@ namespace xmaslights
 
         private void Random()
         {
-            foreach (BackWindow w in this._windows)
+            foreach (var w in _windows)
             {
-                for (int repeat = 0; repeat < (w.LightsCount / 10); repeat++)
+                for (var repeat = 0; repeat < (w.LightsCount / 10); repeat++)
                 {
                     w.Lights[_rnd.Next(w.LightsCount)].Switch();
                 }
@@ -624,16 +620,14 @@ namespace xmaslights
         
         private void AllLightsOff()
         {
-            foreach (BackWindow w in this._windows)
+            foreach (var w in _windows)
             {
-                foreach (ILight l in w.Lights)
+                foreach (var l in w.Lights)
                 {
                     l.Off();
                 }
             }
         }
-
-        #endregion
 
         private int RandomAngle()
         {
@@ -656,27 +650,23 @@ namespace xmaslights
                 var parent = VisualTreeHelper.GetParent(obj);
                 if (parent != null)
                     return FindObject<T>(parent);
-                else
-                    return null;
+                return null;
             }
         }
-     
+
         private void MouseClick(Point point)
         {
             Debug.Write("Click-");
-            Debug.WriteLine(System.Threading.Thread.CurrentThread.ManagedThreadId);
-            foreach (var window in this._windows)
+            Debug.WriteLine(Thread.CurrentThread.ManagedThreadId);
+            foreach (var window in _windows)
             {
                 try
                 {
                     var result = VisualTreeHelper.HitTest(window, window.PointFromScreen(point));
                     if (result != null && result.VisualHit != null && result.VisualHit is Image)
                     {
-                        var lampje = (ILight)FindObject<ILight>(result.VisualHit);
-                        if (lampje != null)
-                        {
-                            lampje.Click();
-                        }
+                        var lampje = (ILight) FindObject<ILight>(result.VisualHit);
+                        lampje?.Click();
                     }
                 }
                 catch (Exception e)
@@ -686,27 +676,11 @@ namespace xmaslights
             }
         }
 
-
         private void _beatDetector_OnBeat()
         {
             Debug.Write("Beat-");
-            Debug.WriteLine(System.Threading.Thread.CurrentThread.ManagedThreadId);
+            Debug.WriteLine(Thread.CurrentThread.ManagedThreadId);
             Tick();
         }
-
-        private static void ReduceWorkingSet()
-        {
-            // To keep ppl from getting shocked when looking in the task manager.
-            using (Process process = Process.GetCurrentProcess())
-            {
-                NativeMethod.SetProcessWorkingSetSize(process.Handle, -1, -1);
-            }
-        }
-
-        private float CheckPowerStatus()
-        {
-            return System.Windows.Forms.SystemInformation.PowerStatus.BatteryLifePercent;
-        }
-
     }
 }
