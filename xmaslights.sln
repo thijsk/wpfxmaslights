@@ -1,29 +1,25 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChristmasLights", "xmaslights\ChristmasLights.csproj", "{2717F0FD-782C-4847-93D1-A0897576761B}"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33103.184
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChristmasLights", "xmaslights\ChristmasLights.csproj", "{2717F0FD-782C-4847-93D1-A0897576761B}"
 EndProject
 Global
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 2
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs03
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = xmaslights\\ChristmasLights.csproj
-		SccProjectName1 = xmaslights
-		SccLocalPath1 = xmaslights
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2717F0FD-782C-4847-93D1-A0897576761B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2717F0FD-782C-4847-93D1-A0897576761B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2717F0FD-782C-4847-93D1-A0897576761B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2717F0FD-782C-4847-93D1-A0897576761B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2717F0FD-782C-4847-93D1-A0897576761B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2717F0FD-782C-4847-93D1-A0897576761B}.Debug|x64.Build.0 = Debug|Any CPU
+		{2717F0FD-782C-4847-93D1-A0897576761B}.Release|x64.ActiveCfg = Release|x64
+		{2717F0FD-782C-4847-93D1-A0897576761B}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8CA06AEF-3B0B-4E7A-BD77-E94725EFF19E}
 	EndGlobalSection
 EndGlobal

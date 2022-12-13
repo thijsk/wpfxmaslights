@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Brokenwire.NET")]
 [assembly: AssemblyProduct("ChristmasLights")]
-[assembly: AssemblyCopyright("Copyright © Thijs Kroesbergen 2020")]
+[assembly: AssemblyCopyright("Copyright © Thijs Kroesbergen 2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

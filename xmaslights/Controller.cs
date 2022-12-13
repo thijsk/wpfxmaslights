@@ -484,7 +484,7 @@ namespace xmaslights
             Settings.Default.BlinkOnBeat = false;
             Settings.Default.BlinkAsYouType = false;
             Settings.Default.Save();
-            Process.Start("http://www.brokenwire.net/ChristmasLights/thankyou.htm");
+            //Process.Start("http://www.brokenwire.net/ChristmasLights/thankyou.htm");
             CreateSettingsWindow();
         }
 

@@ -180,9 +180,12 @@ namespace xmaslights
                 }
             });
             backgroundThread.IsBackground = true;
-            backgroundThread.SetApartmentState(ApartmentState.STA);
-            backgroundThread.Priority = ThreadPriority.BelowNormal;
-            backgroundThread.Start();
+            if (backgroundThread != null)
+            {
+                backgroundThread.SetApartmentState(ApartmentState.STA);
+                backgroundThread.Priority = ThreadPriority.BelowNormal;
+                backgroundThread.Start();
+            }
         }
 
         public void Stop()
