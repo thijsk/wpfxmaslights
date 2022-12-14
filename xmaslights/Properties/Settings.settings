@@ -11,9 +11,6 @@
     <Setting Name="Speed" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">1000</Value>
     </Setting>
-    <Setting Name="BlinkAsYouType" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
     <Setting Name="LightSpacing" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">200</Value>
     </Setting>
@@ -22,12 +19,6 @@
     </Setting>
     <Setting Name="BurninPrevention" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="BlinkOnBeat" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="AudioDevice" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">-1</Value>
     </Setting>
     <Setting Name="LightHueShift" Type="System.Double" Scope="User">
       <Value Profile="(Default)">0</Value>

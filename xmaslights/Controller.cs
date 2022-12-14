@@ -21,15 +21,10 @@ namespace xmaslights
         private DispatcherTimer _timer;
         private DateTime _lastShuffle;
         private TimeSpan _timerInterval;
-        private Hooks _hooks;
         private readonly Dispatcher _dispatcher;
         private WinForms.NotifyIcon _trayIcon;
-        private BeatDetector _beatDetector;
-
+     
         private bool _timerEnabled;
-        private bool _hooksEnabled;
-        private bool _beatDetectEnabled;
-        private int _audioDevice;
         private double _lightHueShift;
 
         private bool _tickEnabled;
@@ -75,17 +70,13 @@ namespace xmaslights
         private void StartStopTickGenerators()
         {
             StartStopTimer();
-            StartStopBeatDetect();
-            StartStopHooks();
         }
 
         private void LoadSettings()
         {
             _lightSpacing = Settings.Default.LightSpacing;
             _timerEnabled = Settings.Default.TimerEnabled;
-            _hooksEnabled = Settings.Default.BlinkAsYouType;
-            _beatDetectEnabled = Settings.Default.BlinkOnBeat;
-            _audioDevice = Settings.Default.AudioDevice;
+           
             _lightHueShift = Settings.Default.LightHueShift;
         }
 
@@ -93,9 +84,7 @@ namespace xmaslights
         {
             DestroyTrayIcon();
             _timerEnabled = false;
-            _hooksEnabled = false;
-            _beatDetectEnabled = false;
-
+           
             _tickEnabled = true;
             StartStopTickGenerators();
             RemoveBackgroundWindows();
@@ -163,30 +152,7 @@ namespace xmaslights
         {
             var about = new AboutWindow();
             about.Owner = Application.Current.MainWindow;
-            about.ShowDialog();
-        }
-
-        private void StartStopBeatDetect()
-        {
-            if (_beatDetectEnabled)
-            {
-                if (_beatDetector != null)
-                {
-                    _beatDetector.Stop();
-                    _beatDetector = null;
-                }
-                _beatDetector = new BeatDetector();
-                _beatDetector.OnBeat += delegate { _dispatcher.BeginInvoke(new Action(_beatDetector_OnBeat), DispatcherPriority.SystemIdle, null); };
-                _beatDetector.Start(_audioDevice);
-            }
-            else
-            {
-                if (_beatDetector != null)
-                {
-                    _beatDetector.Stop();
-                    _beatDetector = null;
-                }
-            }
+            about.Show();
         }
 
         private void StartStopTimer()
@@ -198,7 +164,8 @@ namespace xmaslights
                     _timer = new DispatcherTimer();
                     _timerInterval = new TimeSpan(0, 0, 0, 0, Settings.Default.Speed);
                     _timer.Interval = _timerInterval;
-                    _timer.Tick += delegate(object o, EventArgs e) { Dispatcher.CurrentDispatcher.BeginInvoke(new Action(Tick), DispatcherPriority.SystemIdle); };
+                    _timer.Tick += (sender, args) =>
+                        Dispatcher.CurrentDispatcher.BeginInvoke(new Action(Tick), DispatcherPriority.SystemIdle);
                 }
                 _timer.Start();
                 _timer.IsEnabled = true;
@@ -213,41 +180,6 @@ namespace xmaslights
                 }
             }
         }
-
-        private void StartStopHooks()
-        {
-            var mouseenabled = _hooksEnabled; //needed to break bulbs
-            var keyenabled = _hooksEnabled;
-
-            if (_hooks == null && (mouseenabled || keyenabled))
-            {
-                _hooks = new Hooks();
-                _hooks.OnKeyUp += () =>
-                    _dispatcher.BeginInvoke(new Action(KeyHit), DispatcherPriority.SystemIdle, null);
-                _hooks.OnMouseUp += pt =>
-                    _dispatcher.BeginInvoke(new Action<Point>(MouseClick), DispatcherPriority.SystemIdle, pt);
-            }
-
-            if (keyenabled)
-            {
-                _hooks?.SetBackgroundGlobalLLKeyboardHook();
-            }
-            else
-            {
-                _hooks?.RemoveBackgroundGlobalLLKeyboardHook();
-            }
-
-            if (mouseenabled)
-            {
-                _hooks?.SetBackgroundGlobalLLMouseHook();
-            }
-            else
-            {
-                _hooks?.RemoveBackgroundGlobalLLMouseHook();
-            }
-        }
-
-     
 
         void SystemEvents_DisplaySettingsChanged(object sender, EventArgs e)
         {
@@ -306,18 +238,6 @@ namespace xmaslights
                 case "LightSpacing":
                     _lightSpacing = (int)e.NewValue;
                     PopulateWindows(false);
-                    break;
-                case "BlinkAsYouType":
-                    _hooksEnabled = (bool)e.NewValue;
-                    StartStopHooks();
-                    break;
-                case "BlinkOnBeat":
-                    _beatDetectEnabled = (bool)e.NewValue;
-                    StartStopBeatDetect();
-                    break;
-                case "AudioDevice":
-                    _audioDevice = (int)e.NewValue;
-                    StartStopBeatDetect();
                     break;
                 case "LightHueShift":
                     _lightHueShift = (double)e.NewValue;
@@ -481,8 +401,6 @@ namespace xmaslights
             Settings.Default.FirstRun = false;
             Settings.Default.BurninPrevention = false;
             Settings.Default.TimerEnabled = true;
-            Settings.Default.BlinkOnBeat = false;
-            Settings.Default.BlinkAsYouType = false;
             Settings.Default.Save();
             Process.Start("http://www.brokenwire.net/ChristmasLights/thankyou.htm");
             CreateSettingsWindow();
@@ -611,7 +529,7 @@ namespace xmaslights
         {
             foreach (var w in _windows)
             {
-                for (var repeat = 0; repeat < (w.LightsCount / 10); repeat++)
+                for (var repeat = 0; repeat < (w.LightsCount / 5); repeat++)
                 {
                     w.Lights[_rnd.Next(w.LightsCount)].Switch();
                 }
@@ -674,13 +592,6 @@ namespace xmaslights
                     App.ReportException(e);
                 }
             }
-        }
-
-        private void _beatDetector_OnBeat()
-        {
-            Debug.Write("Beat-");
-            Debug.WriteLine(Thread.CurrentThread.ManagedThreadId);
-            Tick();
         }
     }
 }

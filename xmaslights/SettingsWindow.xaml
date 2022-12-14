@@ -4,37 +4,39 @@
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
     xmlns:xmas="clr-namespace:xmaslights"
     xmlns:local="clr-namespace:xmaslights.Properties"
-    Title="Christmas Lights - Settings" Height="350" Width="550" Visibility="Collapsed" WindowStyle="ToolWindow" Icon="/ChristmasLights;component/Resources/Wreath.ico" >
+    Title="Christmas Lights - Settings" 
+    Height="350" Width="550" 
+    Visibility="Visible" 
+    WindowStyle="ToolWindow" 
+    Icon="/ChristmasLights;component/Resources/Wreath.ico"
+    ResizeMode="NoResize"
+    >
     <Window.Resources>
         <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="BlinkPatternValues">
             <ObjectDataProvider.MethodParameters>
                 <x:Type TypeName="xmas:BlinkPattern" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
-        <ObjectDataProvider MethodName="GetAudioDevices" ObjectType="{x:Type xmas:BeatDetector}" x:Key="AudioDevices" />
         <local:Settings x:Key="settings" />
     </Window.Resources>
-     <Grid DataContext="settings">
+    <Grid DataContext="settings">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="422*" />
             <ColumnDefinition Width="230*" />
         </Grid.ColumnDefinitions>
         <Button Height="23" Margin="0,0,88,9" Name="closeButton" VerticalAlignment="Bottom" Click="closeButton_Click" HorizontalAlignment="Right" Width="73">OK</Button>
-        <Label Height="28" Margin="12,12,0,0" Name="label1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="120">Blinking mode:</Label>
-        <ComboBox Height="28" Margin="138,12,0,0" Name="comboBox1" VerticalAlignment="Top" ItemsSource="{Binding Source={StaticResource BlinkPatternValues}}" SelectedValue="{Binding Source={StaticResource settings}, Path=Default.BlinkPattern}" />
-        <CheckBox Height="17" Margin="12,0,11,38" Name="checkBox1" VerticalAlignment="Bottom" IsChecked="{Binding Source={StaticResource settings}, Path=Default.FirstRun, Mode=TwoWay}">Reset to default settings on next startup</CheckBox>
+        <Label Height="28" Margin="10,10,0,0" Name="label1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="120">Blinking mode:</Label>
+        <ComboBox Height="28" Margin="135,10,3,0" Name="comboBox1" VerticalAlignment="Top" ItemsSource="{Binding Source={StaticResource BlinkPatternValues}}" SelectedValue="{Binding Source={StaticResource settings}, Path=Default.BlinkPattern}" />
+        <CheckBox Height="17" Margin="16,225,7,0" Name="checkBox1" VerticalAlignment="Top" IsChecked="{Binding Source={StaticResource settings}, Path=Default.FirstRun, Mode=TwoWay}">Reset to default settings on next startup</CheckBox>
         <Slider IsDirectionReversed="True" IsEnabled="{Binding ElementName=checkBox3, Path=IsChecked}" Margin="138,75,7,0" Name="slider1" IsSnapToTickEnabled="True" TickPlacement="BottomRight" Minimum="10" Maximum="2500" TickFrequency="50" Value="{Binding Source={StaticResource settings}, Path=Default.Speed, Mode=TwoWay}" Height="28" VerticalAlignment="Top" Delay="100" />
-        <Label IsEnabled="{Binding ElementName=checkBox3, Path=IsChecked}" Height="28" Margin="12,75,0,0" Name="label2" VerticalAlignment="Top" HorizontalAlignment="Left" Width="120" >Blinking speed:</Label>
-        <CheckBox Margin="12,153,0,0" Name="checkBox2" HorizontalAlignment="Left" Width="120" IsChecked="{Binding Source={StaticResource settings}, Path=Default.BlinkAsYouType, Mode=TwoWay}" Height="16" VerticalAlignment="Top">Blink as you type</CheckBox>
-        <CheckBox Margin="12,131,0,0" Name="checkBox5" HorizontalAlignment="Left" Width="120" IsChecked="{Binding Source={StaticResource settings}, Path=Default.BlinkOnBeat, Mode=TwoWay}" Height="16" VerticalAlignment="Top">Blink on the music</CheckBox>
+        <Label IsEnabled="{Binding ElementName=checkBox3, Path=IsChecked}" Height="28" Margin="13,75,0,0" Name="label2" VerticalAlignment="Top" HorizontalAlignment="Left" Width="120" >Blinking speed:</Label>
         <Button Height="23" Margin="0,0,7,9" Name="button1" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75" Click="cancelButton_Click">Cancel</Button>
         <Slider Margin="138,46,7,0" Name="slider2" Value="{Binding Source={StaticResource settings}, Path=Default.LightSpacing, Mode=TwoWay}" AutoToolTipPlacement="None" Minimum="100" Maximum="300" TickPlacement="BottomRight" TickFrequency="20" IsSnapToTickEnabled="True" Height="33" VerticalAlignment="Top" />
-        <Label Margin="12,46,0,0" Name="label3" HorizontalAlignment="Left" Width="120" Height="23" VerticalAlignment="Top">Space between lights:</Label>
-        <CheckBox HorizontalAlignment="Left" Margin="12,109,0,0" Name="checkBox3" Width="120" IsChecked="{Binding Source={StaticResource settings}, Path=Default.TimerEnabled, Mode=TwoWay}" Height="16" VerticalAlignment="Top">Automatic blinking</CheckBox>
+        <Label Margin="12,43,0,0" Name="label3" HorizontalAlignment="Left" Width="126" Height="27" VerticalAlignment="Top">Space between lights:</Label>
+        <CheckBox HorizontalAlignment="Left" Margin="15,108,0,0" Name="checkBox3" Width="120" IsChecked="{Binding Source={StaticResource settings}, Path=Default.TimerEnabled, Mode=TwoWay}" Height="16" VerticalAlignment="Top">Automatic blinking</CheckBox>
         <Image Grid.Column="1" Margin="0,0,12,0" Name="image1" Stretch="None" Source="/ChristmasLights;component/Resources/Santa-Claus.png" />
-        <CheckBox Height="16" IsChecked="{Binding Source={StaticResource settings}, Path=Default.BurninPrevention, Mode=TwoWay}" Margin="12,175,0,0" Name="checkBox4" VerticalAlignment="Top" HorizontalAlignment="Left" Width="159">Plasma burn-in prevention</CheckBox>
-        <ComboBox Height="28" Margin="133,119,0,0" Name="comboBox2" VerticalAlignment="Top" ItemsSource="{Binding Source={StaticResource AudioDevices}}" DisplayMemberPath="Name" SelectedValuePath="DeviceId" SelectedValue="{Binding Source={StaticResource settings}, Path=Default.AudioDevice, Mode=TwoWay}" />
-        <Slider Height="23" HorizontalAlignment="Left" IsDirectionReversed="False" Margin="12,217,0,0" Maximum="1" Name="slider3" SmallChange="0.001" VerticalAlignment="Top" Width="330" Value="{Binding Path=Default.LightHueShift, Source={StaticResource settings}, Mode=TwoWay}" LargeChange="0.01" TickPlacement="BottomRight" TickFrequency="0.1" />
-        <Label Content="Light color:" Height="28" HorizontalAlignment="Left" Margin="12,194,0,0" Name="label4" VerticalAlignment="Top" />
-    </Grid>    
+        <CheckBox Height="16" IsChecked="{Binding Source={StaticResource settings}, Path=Default.BurninPrevention, Mode=TwoWay}" Margin="16,129,0,0" Name="checkBox4" VerticalAlignment="Top" HorizontalAlignment="Left" Width="159">Plasma burn-in prevention</CheckBox>
+        <Slider Height="23" HorizontalAlignment="Left" IsDirectionReversed="False" Margin="16,197,0,0" Maximum="1" Name="slider3" SmallChange="0.001" VerticalAlignment="Top" Width="330" Value="{Binding Path=Default.LightHueShift, Source={StaticResource settings}, Mode=TwoWay}" LargeChange="0.01" TickPlacement="BottomRight" TickFrequency="0.1" />
+        <Label Content="Light color:" Height="28" HorizontalAlignment="Left" Margin="12,164,0,0" Name="label4" VerticalAlignment="Top" RenderTransformOrigin="0.666,1.465" />
+    </Grid>
 </Window>

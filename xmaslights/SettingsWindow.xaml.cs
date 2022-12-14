@@ -14,6 +14,7 @@ namespace xmaslights
 
         public SettingsWindow(Controller c)
         {
+            Visibility = Visibility.Collapsed;
             this.controller = c;
             this.DataContext = controller;
             InitializeComponent();
@@ -30,6 +31,5 @@ namespace xmaslights
             Settings.Default.Reload();
             this.Close();
         }
-        
     }
 }

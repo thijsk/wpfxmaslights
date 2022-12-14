@@ -20,14 +20,9 @@ namespace xmaslights
 
         void link_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
         {
-            if (e.Uri.AbsoluteUri == "about:bass")
-            {
-                BeatDetector.ShowAbout();
-            }
-            else
-            {
-                Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
-            }
+            
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
+        
             e.Handled = true;
         }
 

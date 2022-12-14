@@ -2,29 +2,31 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="About" Height="345" Width="500"
-    Icon="/ChristmasLights;component/Resources/Wreath.ico">
+    Icon="/ChristmasLights;component/Resources/Wreath.ico"
+    WindowStyle="ToolWindow"
+    ResizeMode="NoResize"
+    >
     <Grid >
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="291*" />
             <ColumnDefinition Width="187*" />
         </Grid.ColumnDefinitions>
         <Button Height="23" Margin="85,0,12,12" Name="button1" VerticalAlignment="Bottom" Click="button1_Click" HorizontalAlignment="Stretch" Grid.Column="1">Close</Button>
-        <TextBox Margin="12,12,12,0" Name="textBox1" TextWrapping="WrapWithOverflow" Height="88" VerticalAlignment="Top">WPF Christmas Lights is an application written by Thijs Kroesbergen and is published under the GPL license. For the complete source code and more information visit the GitHub page.</TextBox>
+        <TextBox Grid.Column="0" Margin="12,12,12,0" Name="textBox1" TextWrapping="WrapWithOverflow" Height="88" VerticalAlignment="Top">WPF Christmas Lights is an application written by Thijs Kroesbergen and is published under the GPL license. For the complete source code and more information visit the GitHub page.</TextBox>
         <Image Margin="0,0,12,140" Name="image1" Stretch="None" Source="/ChristmasLights;component/Resources/Candy-Cane.png" HorizontalAlignment="Center" Grid.Column="1" VerticalAlignment="Center" />
-        <TextBlock Margin="16,106,12,37">
+        <TextBlock Grid.Column="0" Margin="16,106,12,37">
             Thijs Kroesbergen / Brokenwire.Net
             <LineBreak/>
             <Hyperlink RequestNavigate="link_RequestNavigate" NavigateUri="http://www.brokenwire.net/">www.brokenwire.net</Hyperlink>
             <LineBreak/>
             <LineBreak/>
-            Source Code available on Codeplex
+            Source Code available on Github
             <LineBreak/>
             <Hyperlink RequestNavigate="link_RequestNavigate" NavigateUri="https://github.com/thijsk/wpfxmaslights">github.com/thijsk/wpfxmaslights</Hyperlink>
             <LineBreak/>
             <LineBreak/>
             Icons by Iconka <Hyperlink RequestNavigate="link_RequestNavigate" NavigateUri="http://iconka.com/">http://iconka.com/</Hyperlink>
             <LineBreak/>
-            <Hyperlink RequestNavigate="link_RequestNavigate" NavigateUri="about:bass">BASS.NET</Hyperlink> - the .Net Audio Library for BASS
         </TextBlock>
     </Grid>
 </Window>
